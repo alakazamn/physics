@@ -1,5 +1,6 @@
 import Renderer from "../graphics/Renderer";
-import { Input } from "./input";
+import { InputType } from "./input";
+import Input from "./input";
 import Player from "../../shared/player";
 import { Direction } from "../../shared/direction";
 import * as io from 'socket.io-client';
@@ -64,6 +65,7 @@ export default class Core {
   }
 
   tick = () => {
+   this.input()
     if(this.chunk)
       Renderer.getInstance().renderChunk(this.chunk, this.player.centerX(), this.player.centerY());
     if(this.active)
@@ -71,22 +73,19 @@ export default class Core {
         this.tick();
       });
   }
-
-  public inputUp(i : Input) {
-  }
-
-  inputDown = (i : Input) => {
-    if(i == Input.UP) {
-      this.player.walk(Direction.UP);
-    } else if(i == Input.DOWN) {
-      this.player.walk(Direction.DOWN);
-    } else if(i == Input.LEFT) {
-      this.player.walk(Direction.LEFT);
-    } else if(i == Input.RIGHT) {
-      this.player.walk(Direction.RIGHT);
+  input = () => {
+    if(Input.getInstance().isDown(InputType.UP)) {
+        this.player.walk(Direction.UP);
     }
-    console.log(i);
-    //update chunks somehow
+    if(Input.getInstance().isDown(InputType.DOWN)) {
+        this.player.walk(Direction.DOWN);
+    }
+    if(Input.getInstance().isDown(InputType.LEFT)) {
+        this.player.walk(Direction.LEFT);
+    }
+    if(Input.getInstance().isDown(InputType.RIGHT)) {
+        this.player.walk(Direction.RIGHT);
+    }
   }
   /*
   * Stuff to do when window is closing

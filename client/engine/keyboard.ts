@@ -1,14 +1,15 @@
 import Renderer from "../graphics/Renderer";
-import { Input } from "./input";
+import Input  from "./input";
+import { InputType }  from "./input";
 import Core from "./core";
 
 export default class Keyboard {
   //modifiable
   keyMap = {
-    68: Input.RIGHT,
-    65: Input.LEFT,
-    87: Input.UP,
-    83: Input.DOWN
+    68: InputType.RIGHT,
+    65: InputType.LEFT,
+    87: InputType.UP,
+    83: InputType.DOWN
   };
 
   private static instance : Keyboard;
@@ -24,12 +25,12 @@ export default class Keyboard {
 
   keydown = (event) => {
     var key = this.keyMap[event.keyCode]
-    Core.getInstance().inputDown(key);
+    Input.getInstance().down(key);
   }
 
   keyup = (event) => {
     var key = this.keyMap[event.keyCode]
-    Core.getInstance().inputUp(key);
+    Input.getInstance().up(key);
   }
 
   /*
