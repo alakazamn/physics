@@ -1,13 +1,19 @@
 <html lang="en"><head>
-    <title>Toph's Slime Monster</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.10.2/p5.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.10.2/addons/p5.sound.min.js"></script>
+    <title>Towns</title>
     <meta charset="utf-8">
     <script src="/socket.io/socket.io.js"></script>
   </head>
   <body data-gr-c-s-loaded="true">
-    <script src="https://slime.minenode.net/sketch.js"></script>
-
-    <canvas id="defaultCanvas0" class="p5Canvas" width="2400" height="1600" style="width: 1200px; height: 800px;"></canvas>
+    <script src="/client.js"></script>
+    <style>
+      canvas {
+        image-rendering: optimizeSpeed;             /* Older versions of FF          */
+        image-rendering: -moz-crisp-edges;          /* FF 6.0+                       */
+        image-rendering: -webkit-optimize-contrast; /* Safari                        */
+        image-rendering: -o-crisp-edges;            /* OS X & Windows Opera (12.02+) */
+        image-rendering: pixelated;                 /* Awesome future-browsers       */
+        -ms-interpolation-mode: nearest-neighbor;   /* IE                            */
+      }
+    </style>
   </body>
 </html>

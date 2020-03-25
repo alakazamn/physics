@@ -5,13 +5,39 @@ const {
   NODE_ENV = 'production',
 } = process.env;
 
-module.exports = {
-  entry: './src/server.ts',
+const clientConfig = {
+  entry: {
+    client: './client/client.ts'
+  },
   mode: NODE_ENV,
   watch: NODE_ENV === 'development',
   output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: 'server.js'
+    filename: '[name].js',
+    path: __dirname + '/dist'
+  },
+  resolve: {
+    extensions: [ '.tsx', '.ts', '.js' ],
+  },
+  module: {
+    rules: [
+      {
+        test: /\.ts$/,
+        loader: 'ts-loader',
+        exclude: /node_modules/
+      }
+    ]
+  },
+  target: 'web'
+}
+const serverConfig = {
+  entry: {
+    server: './src/server.ts'
+  },
+  mode: NODE_ENV,
+  watch: NODE_ENV === 'development',
+  output: {
+    filename: '[name].js',
+    path: __dirname + '/dist'
   },
   externals: [nodeExternals()],
   resolve: {
@@ -32,3 +58,5 @@ module.exports = {
     __filename: false,
   }
 }
+
+module.exports = [serverConfig, clientConfig]
