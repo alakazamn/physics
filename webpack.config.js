@@ -24,7 +24,14 @@ const clientConfig = {
         test: /\.ts$/,
         loader: 'ts-loader',
         exclude: /node_modules/
-      }
+      },
+      {
+        test: /\.(gif|svg|jpg|png)$/,
+        loader: "url-loader",
+            options: {
+              esModule: false,
+            },
+      },
     ]
   },
   target: 'web'

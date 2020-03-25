@@ -4,7 +4,7 @@ import BoundingBox from '../../shared/boundingbox';
 import Player from '../../shared/player';
 
 export default class Renderer {
-  private static MULT : number = 2;
+  private static MULT : number = 3;
   private static instance : Renderer;
   private canvas = document.createElement('canvas');
   private lastChunk : Chunk;
@@ -26,6 +26,7 @@ export default class Renderer {
   */
 
   initialize = () => {
+    Tile.loadTextures()
     this.canvas.style.position = "fixed";
     this.canvas.style.left = "0px";
     this.canvas.style.top = "0px";
@@ -49,6 +50,7 @@ export default class Renderer {
 
   //Takes in Chunk and player location (center)
   renderChunk = (c : Chunk, x: number, y: number) => {
+    if(!Tile.loaded()) return;
     let zoom = Renderer.MULT;
     this.lastChunk = c;
     this.lastX = x;

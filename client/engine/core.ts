@@ -7,6 +7,11 @@ import * as io from 'socket.io-client';
 import Chunk from "../../shared/chunk";
 import Identity from "../../shared/social/identity";
 import Keyboard from "./keyboard";
+import PlayerJoinEvent from "../../shared/event/PlayerJoinEvent";
+import Dispatch from "./dispatch";
+import GameEvent, { EventResult } from "../../shared/event/event";
+import PlayerMoveEvent from "../../shared/event/PlayerMoveEvent";
+import PlayerQuitEvent from "../../shared/event/PlayerQuitEvent";
 
 export default class Core {
   private static instance : Core;
@@ -17,7 +22,9 @@ export default class Core {
   private chunk : Chunk;
 
   private constructor() {
-
+    Dispatch.addEventListener("PlayerMoveEvent",this.onPlayerMove); //can addPriorityListener if looking to do collisions somewhere else
+    Dispatch.addEventListener("PlayerJoinEvent",this.onPlayerJoin);
+    Dispatch.addEventListener("PlayerQuitEvent",this.onPlayerQuit);
   }
 
   public static getInstance() : Core {
@@ -74,19 +81,41 @@ export default class Core {
       });
   }
   input = () => {
+    var p = this.player
     if(Input.getInstance().isDown(InputType.UP)) {
-        this.player.walk(Direction.UP);
+        Dispatch.fire("PlayerMoveEvent", new PlayerMoveEvent(p, p.getLocation(), p.getLocation().plusY(-16)));
     }
     if(Input.getInstance().isDown(InputType.DOWN)) {
-        this.player.walk(Direction.DOWN);
+        Dispatch.fire("PlayerMoveEvent", new PlayerMoveEvent(p, p.getLocation(), p.getLocation().plusY(16)));
     }
     if(Input.getInstance().isDown(InputType.LEFT)) {
-        this.player.walk(Direction.LEFT);
+      Dispatch.fire("PlayerMoveEvent", new PlayerMoveEvent(p, p.getLocation(), p.getLocation().plusX(-16)));
     }
     if(Input.getInstance().isDown(InputType.RIGHT)) {
-        this.player.walk(Direction.RIGHT);
+      Dispatch.fire("PlayerMoveEvent", new PlayerMoveEvent(p, p.getLocation(), p.getLocation().plusX(16)));
     }
   }
+
+  onPlayerMove = (e : PlayerMoveEvent) => {
+    //allow or disallow
+
+    //actually do it
+    if(e.getResult() != EventResult.DENY) {
+      this.player.setLocation(e.getTo());
+      //send a packet
+    }
+    console.log("moved");
+    console.log(e);
+  }
+
+  onPlayerJoin = (e : PlayerJoinEvent) => {
+
+  }
+
+  onPlayerQuit = (e : PlayerQuitEvent) => {
+
+  }
+
   /*
   * Stuff to do when window is closing
   */
@@ -94,5 +123,6 @@ export default class Core {
   end = () => {
     this.active = false;
     console.log("exited");
+    //should remove listeners, the syntax is annoying rn.
   }
 }

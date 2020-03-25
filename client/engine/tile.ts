@@ -1,19 +1,61 @@
 export default class Tile {
   public static readonly WIDTH = 16;
   public static readonly HEIGHT = 16;
-  private imageData : ImageData;
+  private static readonly TILES = 2;
+  private static readonly textures : ImageData[] = [];
+  private static loadedAll = false;
 
-  public constructor(id : number) {
-    if(id == 0) {
-      this.imageData = Tile.solidTile(0,255,0);
+  public static loadTextures() : Promise<void> {
+  let tileNumber : number = Tile.TILES;
+  var promises : Promise<void>[]  = [];
+    for(var i = 0; i<tileNumber; i++) {
+      const g = i;
+      promises[i] = Tile.loadTexture(i).then((imageData) => {
+        Tile.textures[g] = imageData;
+      })
     }
-    else if(id == 1) {
-      this.imageData = Tile.solidTile(0,0,255);
-    }
+    return Promise.all(promises).then(() => {
+      Tile.loadedAll = true;
+    }).catch((e) => {
+        console.log(e);
+    })
+  }
+  private static loadTexture(id : Number) : Promise<ImageData> {
+      try {
+        const url = require('../../dist/tiles/'+id+'.png')
+        return this.convertURIToImageData(url);
+      } catch (e) {
+        return Promise.reject(e);
+      }
+  }
+  public constructor(private id : number) {
+  }
+  public static loaded = () : Boolean => {
+    return Tile.loadedAll;
   }
   image = () : ImageData => {
-    return this.imageData;
+    if(this.id <Tile.TILES)
+      return Tile.textures[this.id];
+    return null;
   }
+  //https://stackoverflow.com/questions/17591148/converting-data-uri-to-image-data
+ private static convertURIToImageData = (URI: string) : Promise<ImageData> => {
+  return new Promise(function(resolve, reject) {
+    console.log("running");
+    if (URI == null) return reject();
+    var canvas = document.createElement('canvas'),
+        context = canvas.getContext('2d'),
+        image = new Image();
+    image.addEventListener('load', () => {
+      console.log("okay");
+      canvas.width = image.width;
+      canvas.height = image.height;
+      context.drawImage(image, 0, 0, canvas.width, canvas.height);
+      return resolve(context.getImageData(0, 0, canvas.width, canvas.height));
+    }, false);
+    image.src = URI;
+  });
+}
 
   private static solidTile(r : number, g : number, b : number) : ImageData {
     return Tile.solid(Tile.WIDTH, Tile.HEIGHT, r,g,b);

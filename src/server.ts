@@ -26,7 +26,7 @@ io.set('authorization', function (handshakeData, callback) {
 io.on('connection', function(socket: Socket){
   console.log('Connection');
   socket.on('login', function(){
-      socket.emit('chunk', lakes(100, 100));
+      socket.emit('chunk', lakes(500, 500));
   });
   socket.on('disconnect', function(){
     console.log('Quit.');
