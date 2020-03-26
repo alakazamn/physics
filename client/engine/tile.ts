@@ -1,24 +1,28 @@
+import Renderer from "../graphics/Renderer";
+
 export default class Tile {
   public static readonly WIDTH = 16;
   public static readonly HEIGHT = 16;
   private static readonly TILES = 2;
-  private static readonly textures : ImageData[] = [];
+  private static readonly textures : ImageBitmap[] = [];
   private static loadedAll = false;
 
-  public static loadTextures() : Promise<void> {
+  public static async loadTextures() : Promise<void> {
   let tileNumber : number = Tile.TILES;
   var promises : Promise<void>[]  = [];
     for(var i = 0; i<tileNumber; i++) {
       const g = i;
       promises[i] = Tile.loadTexture(i).then((imageData) => {
-        Tile.textures[g] = imageData;
+        createImageBitmap(imageData).then(renderer => { Tile.textures[g] = renderer; })
       })
     }
-    return Promise.all(promises).then(() => {
+    try {
+      await Promise.all(promises);
       Tile.loadedAll = true;
-    }).catch((e) => {
-        console.log(e);
-    })
+    }
+    catch (e) {
+      console.log(e);
+    }
   }
   private static loadTexture(id : Number) : Promise<ImageData> {
       try {
@@ -33,7 +37,7 @@ export default class Tile {
   public static loaded = () : Boolean => {
     return Tile.loadedAll;
   }
-  image = () : ImageData => {
+  image = () : ImageBitmap => {
     if(this.id <Tile.TILES)
       return Tile.textures[this.id];
     return null;
@@ -47,11 +51,11 @@ export default class Tile {
         context = canvas.getContext('2d'),
         image = new Image();
     image.addEventListener('load', () => {
-      console.log("okay");
-      canvas.width = image.width;
-      canvas.height = image.height;
-      context.drawImage(image, 0, 0, canvas.width, canvas.height);
-      return resolve(context.getImageData(0, 0, canvas.width, canvas.height));
+      canvas.width = image.width*Renderer.ZOOM;
+      canvas.height = image.height*Renderer.ZOOM;
+      canvas.getContext("2d").imageSmoothingEnabled = false;
+      context.drawImage(image, 0, 0, image.width, image.height, 0, 0, image.width*Renderer.ZOOM, image.height*Renderer.ZOOM);
+      return resolve(context.getImageData(0, 0, image.width*Renderer.ZOOM,  image.height*Renderer.ZOOM));
     }, false);
     image.src = URI;
   });

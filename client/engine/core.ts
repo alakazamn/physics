@@ -53,7 +53,6 @@ export default class Core {
 
     this.socket.on('chunk', (chunk: any) => {
       if(Array.isArray(chunk.tiles)) { //TODO better check
-        console.log("Setting");
         this.chunk = new Chunk(chunk.tiles, Array.isArray(chunk.entities) ? chunk.entites : []);
         console.log(this.chunk);
       }
@@ -68,31 +67,63 @@ export default class Core {
     this.active = true;
     Renderer.getInstance().initialize();
     Keyboard.getInstance().load();
+    this.lastTime = performance.now()
+    this.timer = performance.now();
     this.tick();
   }
 
+ private lastTime : number;
+ private static TPS = 20.0
+ private static TPMS = 1000  / Core.TPS
+ private delta = 0
+ private timer : number;
+ private frames = 0;
+ private updates = 0;
+
   tick = () => {
-   this.input()
+    var now = performance.now();
+
+    this.delta += (now - this.lastTime) / Core.TPMS;
+    this.lastTime = now;
+
+    this.logic(this.delta);
+    this.updates += this.delta;
+    this.delta = 0;
+
     if(this.chunk)
       Renderer.getInstance().renderChunk(this.chunk, this.player.centerX(), this.player.centerY());
+    this.frames++;
+
+    if(performance.now() - this.timer >= 1000) {
+        console.log(this.frames);
+        console.log(this.updates);
+        console.log("-")
+        this.timer += 1000;
+        this.frames = 0;
+        this.updates = 0;
+    }
+
     if(this.active)
       window.requestAnimationFrame(() => {
         this.tick();
       });
   }
-  input = () => {
+  logic = (delta : number) => {
+    this.input(delta)
+  }
+  input = (delta : number) => { //putting this in the loop means we have to deal with time. Need better polling
     var p = this.player
     if(Input.getInstance().isDown(InputType.UP)) {
-        Dispatch.fire("PlayerMoveEvent", new PlayerMoveEvent(p, p.getLocation(), p.getLocation().plusY(-16)));
+        Dispatch.fire("PlayerMoveEvent", new PlayerMoveEvent(p, p.getLocation(), p.getLocation().plusY(-8*delta)));
     }
     if(Input.getInstance().isDown(InputType.DOWN)) {
-        Dispatch.fire("PlayerMoveEvent", new PlayerMoveEvent(p, p.getLocation(), p.getLocation().plusY(16)));
+        Dispatch.fire("PlayerMoveEvent", new PlayerMoveEvent(p, p.getLocation(), p.getLocation().plusY(8*delta)));
     }
     if(Input.getInstance().isDown(InputType.LEFT)) {
-      Dispatch.fire("PlayerMoveEvent", new PlayerMoveEvent(p, p.getLocation(), p.getLocation().plusX(-16)));
+      Dispatch.fire("PlayerMoveEvent", new PlayerMoveEvent(p, p.getLocation(), p.getLocation().plusX(-8*delta)));
     }
     if(Input.getInstance().isDown(InputType.RIGHT)) {
-      Dispatch.fire("PlayerMoveEvent", new PlayerMoveEvent(p, p.getLocation(), p.getLocation().plusX(16)));
+      Dispatch.fire("PlayerMoveEvent", new PlayerMoveEvent(p, p.getLocation(), p.getLocation().plusX(8*delta)));
     }
   }
 
@@ -101,11 +132,9 @@ export default class Core {
 
     //actually do it
     if(e.getResult() != EventResult.DENY) {
-      this.player.setLocation(e.getTo());
+      e.getPlayer().setLocation(e.getTo());
       //send a packet
     }
-    console.log("moved");
-    console.log(e);
   }
 
   onPlayerJoin = (e : PlayerJoinEvent) => {

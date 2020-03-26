@@ -4,7 +4,7 @@ import BoundingBox from '../../shared/boundingbox';
 import Player from '../../shared/player';
 
 export default class Renderer {
-  private static MULT : number = 3;
+  public static ZOOM : number = 3;
   private static instance : Renderer;
   private canvas = document.createElement('canvas');
   private lastChunk : Chunk;
@@ -51,7 +51,6 @@ export default class Renderer {
   //Takes in Chunk and player location (center)
   renderChunk = (c : Chunk, x: number, y: number) => {
     if(!Tile.loaded()) return;
-    let zoom = Renderer.MULT;
     this.lastChunk = c;
     this.lastX = x;
     this.lastY = y;
@@ -59,11 +58,11 @@ export default class Renderer {
     let cameraWidth = this.canvas.offsetWidth;
     let cameraHeight = this.canvas.offsetHeight;
 
-    let mapWidth = c.columns() * Tile.WIDTH * zoom;
-    let mapHeight = c.rows() *  Tile.HEIGHT * zoom;
+    let mapWidth = c.columns() * Tile.WIDTH * Renderer.ZOOM;
+    let mapHeight = c.rows() *  Tile.HEIGHT * Renderer.ZOOM;
 
-    var cameraX = x*zoom; //to pixels
-    var cameraY = y*zoom;  //to pixels
+    var cameraX = x*Renderer.ZOOM; //to pixels
+    var cameraY = y*Renderer.ZOOM;  //to pixels
 
     if(mapWidth > cameraWidth) {
       if(cameraX - (cameraWidth/2) < 0) { //if left bound < 0
@@ -90,28 +89,28 @@ export default class Renderer {
 
     var cam = new BoundingBox(cameraX-(cameraWidth/2), cameraY-(cameraHeight/2), cameraWidth, cameraHeight);
 
-    for(var xx = Math.floor(cam.x / (Tile.WIDTH * zoom)); xx<Math.ceil((cam.x+cameraWidth) / (Tile.WIDTH * zoom)); xx++) {
-      for(var yy = Math.floor(cam.y / (Tile.HEIGHT * zoom)); yy<Math.ceil((cam.y+cameraHeight) / (Tile.HEIGHT * zoom)); yy++) {
-        if(this.onScreen(xx, yy, zoom, cam)) {
-          const relPosX = ((xx*Tile.WIDTH*zoom)-cam.x);
-          const relPosY = ((yy*Tile.HEIGHT*zoom)-cam.y);
-          createImageBitmap(new Tile(c.tiles[xx][yy]).image()).then(renderer => {
-            this.canvas.getContext("2d").drawImage(renderer, 0, 0, Tile.WIDTH, Tile.HEIGHT, relPosX, relPosY, Tile.WIDTH*zoom, Tile.HEIGHT*zoom);
-          }).catch((e)=> {
-            console.log(e);
-          })
-        }
+    for(var xx = Math.floor(cam.x / (Tile.WIDTH * Renderer.ZOOM)); xx<Math.ceil((cam.x+cameraWidth) / (Tile.WIDTH * Renderer.ZOOM)); xx++) {
+      for(var yy = Math.floor(cam.y / (Tile.HEIGHT * Renderer.ZOOM)); yy<Math.ceil((cam.y+cameraHeight) / (Tile.HEIGHT * Renderer.ZOOM)); yy++) {
+          const relPosX = ((xx*Tile.WIDTH*Renderer.ZOOM)-cam.x);
+          const relPosY = ((yy*Tile.HEIGHT*Renderer.ZOOM)-cam.y);
+
+          this.canvas.getContext("2d").drawImage(new Tile(c.tiles[xx][yy]).image(), relPosX, relPosY);
       }
     }
     //render the player
     createImageBitmap(Tile.solid(Player.WIDTH, Player.HEIGHT, 255,255,255)).then(renderer => {
-      this.canvas.getContext("2d").drawImage(renderer, 0, 0, Tile.WIDTH, Tile.HEIGHT, ((x*zoom)-(Player.WIDTH*zoom/2)-cam.x), ((y*zoom)-(Player.HEIGHT*zoom/2)-cam.y), Player.WIDTH*zoom, Player.HEIGHT*zoom);
+      this.canvas.getContext("2d").drawImage(renderer, 0, 0, Tile.WIDTH, Tile.HEIGHT, ((x*Renderer.ZOOM)-(Player.WIDTH*Renderer.ZOOM/2)-cam.x), ((y*Renderer.ZOOM)-(Player.HEIGHT*Renderer.ZOOM/2)-cam.y), Player.WIDTH*Renderer.ZOOM, Player.HEIGHT*Renderer.ZOOM);
     }).catch((e)=> {
       console.log(e);
     })
+
+
   }
-  public onScreen = (x : number, y: number, zoom : number, camera: BoundingBox) : Boolean => {
-    return (zoom*x*Tile.WIDTH)>(camera.x-(Tile.WIDTH*zoom)) && (zoom*x*Tile.WIDTH)<=(camera.x+camera.width) && (zoom*y*Tile.HEIGHT)>(camera.y-(Tile.HEIGHT*zoom)) && (zoom*y*Tile.HEIGHT)<=(camera.y+camera.height);
+  public onScreen = (x : number, y: number, width: number, height: number, zoom : number, camera: BoundingBox) : Boolean => {
+    return (zoom*x*width)>(camera.x-(width*zoom)) && (zoom*x*width)<=(camera.x+camera.width) && (zoom*y*height)>(camera.y-(height*zoom)) && (zoom*y*height)<=(camera.y+camera.height);
+  }
+  public tileOnScreen = (x : number, y: number, zoom : number, camera: BoundingBox) : Boolean => {
+    return this.onScreen(x,y,Tile.WIDTH, Tile.HEIGHT, zoom, camera);
   }
 
   public fullScreen = () => {
