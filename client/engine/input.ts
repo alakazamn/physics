@@ -1,6 +1,8 @@
 import Renderer from "../graphics/Renderer";
 import Core from "./core";
 import Keyboard from "./keyboard";
+import Dispatch from "./dispatch";
+import GameInputEvent, { GameInputUpEvent, GameInputDownEvent } from "../../shared/event/GameInputEvent";
 
 export default class Input {
   //modifiable
@@ -24,10 +26,12 @@ export default class Input {
 
   up = (i : InputType) => {
     this.inputState[i] = false;
+    Dispatch.fire(new GameInputUpEvent(i));
   }
 
   down = (i : InputType) => {
     this.inputState[i] = true;
+    Dispatch.fire(new GameInputDownEvent(i));
   }
 
 
@@ -41,5 +45,9 @@ export default class Input {
 
 
 export enum InputType {
-    UP,DOWN,LEFT,RIGHT
+  UP,
+  DOWN,
+  LEFT,
+  RIGHT,
+  FULLSCREEN
 }

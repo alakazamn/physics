@@ -7,8 +7,8 @@ export default class PlayerEvent extends GameEvent {
     super();
   }
 
- getEventName = ​() : String => {
-    return "PlayerMoveEvent";
+ getEventName = ​() : string => {
+    return "PlayerEvent";
   }
 
   getPlayer​ = () : Player => {

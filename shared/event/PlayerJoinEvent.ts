@@ -3,14 +3,14 @@ import Player from "../player";
 
 export default class PlayerJoinEvent extends PlayerEvent {
 
-  constructor(player : Player, private joinMessage : String)	 {
+  constructor(player : Player, private joinMessage : string)	 {
     super(player);
   }
-  getEventName = ​() : String => {
-    return "PlayerQuitEvent";
+  getEventName = ​() : string => {
+    return "PlayerJoinEvent";
   }
 
-  getMessage = () : String => {
+  getMessage = () : string => {
     return this.joinMessage;
   }
 }

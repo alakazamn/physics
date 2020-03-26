@@ -5,12 +5,6 @@ import Core from "./core";
 
 export default class Keyboard {
   //modifiable
-  keyMap = {
-    68: InputType.RIGHT,
-    65: InputType.LEFT,
-    87: InputType.UP,
-    83: InputType.DOWN
-  };
 
   private static instance : Keyboard;
 
@@ -24,13 +18,23 @@ export default class Keyboard {
   }
 
   keydown = (event) => {
-    var key = this.keyMap[event.keyCode]
-    Input.getInstance().down(key);
+    Input.getInstance().down(this.map(event.keyCode));
   }
 
   keyup = (event) => {
-    var key = this.keyMap[event.keyCode]
-    Input.getInstance().up(key);
+    Input.getInstance().up(this.map(event.keyCode));
+  }
+
+  map = (key : number) : InputType => {
+    //make configurable
+    const keyMap = {
+      68: InputType.RIGHT,
+      65: InputType.LEFT,
+      87: InputType.UP,
+      83: InputType.DOWN,
+      122: InputType.FULLSCREEN
+    };
+    return keyMap[key]
   }
 
   /*

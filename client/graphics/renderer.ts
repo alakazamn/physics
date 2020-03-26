@@ -97,7 +97,6 @@ export default class Renderer {
               const relPosX = ((xx*Tile.WIDTH*Renderer.ZOOM)-cam.x);
               let relPosY = ((yy*Tile.HEIGHT*Renderer.ZOOM)-cam.y);
               if(c.tiles[xx][yy][zz] != -1) {
-                console.log(c.tiles[xx][yy][zz]);
                 const img = new Tile(c.tiles[xx][yy][zz]).image();
                 if(img.height > Tile.HEIGHT) {
                   relPosY -= ((img.height / (Tile.HEIGHT*Renderer.ZOOM))-1)*Tile.HEIGHT*Renderer.ZOOM;
@@ -105,7 +104,12 @@ export default class Renderer {
                 this.canvas.getContext("2d").drawImage(img, relPosX, relPosY);
               }
           }
-          console.log("zz- "+zz);
+          for(var entity of c.getEntities()) {
+            if(zz+1===c.tiles[0][0].length && (entity.y >= yy*Tile.HEIGHT || (entity.y < 0 && yy == 0)) && entity.y < (yy+1)*Tile.HEIGHT) {
+              //render the player
+              this.canvas.getContext("2d").drawImage(new Tile(Tile.TILES).image(), ((entity.x*Renderer.ZOOM)-(Player.WIDTH*Renderer.ZOOM/2)-cam.x), ((entity.y*Renderer.ZOOM)-(Player.HEIGHT*Renderer.ZOOM/2)-cam.y), Player.WIDTH*Renderer.ZOOM, Player.HEIGHT*Renderer.ZOOM);
+            }
+          }
           if(zz+1===c.tiles[0][0].length && (y >= yy*Tile.HEIGHT || (y < 0 && yy == 0)) && y < (yy+1)*Tile.HEIGHT) {
             //render the player
             this.canvas.getContext("2d").drawImage(new Tile(Tile.TILES).image(), ((x*Renderer.ZOOM)-(Player.WIDTH*Renderer.ZOOM/2)-cam.x), ((y*Renderer.ZOOM)-(Player.HEIGHT*Renderer.ZOOM/2)-cam.y), Player.WIDTH*Renderer.ZOOM, Player.HEIGHT*Renderer.ZOOM);
@@ -122,8 +126,14 @@ export default class Renderer {
     return this.onScreen(x,y,Tile.WIDTH, Tile.HEIGHT, zoom, camera);
   }
 
-  public fullScreen = () => {
-    this.canvas.requestFullscreen();
+  public toggleFullScreen = () => {
+    if (!document.fullscreenElement) {
+       document.documentElement.requestFullscreen();
+   } else {
+     if (document.exitFullscreen) {
+       document.exitFullscreen();
+     }
+   }
   }
   /*
   * Stuff to do when window is closing

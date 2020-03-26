@@ -51,7 +51,6 @@ export default class Tile {
   //https://stackoverflow.com/questions/17591148/converting-data-uri-to-image-data
  private static convertURIToImageData = (URI: string) : Promise<ImageData> => {
   return new Promise(function(resolve, reject) {
-    console.log("running");
     if (URI == null) return reject();
     var canvas = document.createElement('canvas'),
         context = canvas.getContext('2d'),
@@ -66,18 +65,4 @@ export default class Tile {
     image.src = URI;
   });
 }
-
-  private static solidTile(r : number, g : number, b : number) : ImageData {
-    return Tile.solid(Tile.WIDTH, Tile.HEIGHT, r,g,b);
-  }
-  public static solid(width :number, height: number, r : number, g : number, b : number) : ImageData {
-    var imageData : Uint8ClampedArray = new Uint8ClampedArray(width*height*4);
-    for(var i = 0; i<width*height*4; i+=4) {
-      imageData[i] = r;
-      imageData[i+1] = g;
-      imageData[i+2] = b;
-      imageData[i+3] = 255;
-    }
-    return new ImageData(imageData, width, height);
-  }
 }

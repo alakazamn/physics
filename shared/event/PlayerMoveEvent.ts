@@ -7,7 +7,7 @@ export default class PlayerMoveEvent extends PlayerEvent {
   constructor(player : Player, private from : GameLocation, private to : GameLocation)	 {
     super(player);
   }
-  getEventName = ​() : String => {
+  getEventName = ​() : string => {
     return "PlayerMoveEvent";
   }
 

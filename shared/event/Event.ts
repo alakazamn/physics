@@ -2,7 +2,7 @@ const uuidv4 = require("uuid/v4")
 
 export default class GameEvent {
   result: EventResult;
-  getEventName = ​() : String => {
+  getEventName = ​() : string => {
     return "Event";
   }
   setResult = (result : EventResult) : void => {
@@ -10,6 +10,11 @@ export default class GameEvent {
   }
   getResult = () : EventResult => {
     return this.result;
+  }
+  packet = () : any => {
+    let event : any = this;
+    event.name = this.getEventName();
+    return event;
   }
 }
 

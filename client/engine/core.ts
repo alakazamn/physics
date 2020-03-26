@@ -12,7 +12,11 @@ import Dispatch from "./dispatch";
 import GameEvent, { EventResult } from "../../shared/event/event";
 import PlayerMoveEvent from "../../shared/event/PlayerMoveEvent";
 import PlayerQuitEvent from "../../shared/event/PlayerQuitEvent";
-
+import { GameInputDownEvent } from "../../shared/event/GameInputEvent";
+import SocketHandler from "./socket";
+import ChunkEvent from "../../shared/event/ChunkEvent";
+import PlayerLoginEvent from "../../shared/event/PlayerLoginEvent";
+import EntityMoveEvent from "../../shared/event/EntityMoveEvent";
 export default class Core {
   private static instance : Core;
   private active : Boolean = false;
@@ -22,9 +26,14 @@ export default class Core {
   private chunk : Chunk;
 
   private constructor() {
+    Dispatch.addEventListener("EntityMoveEvent",this.onEntityMove); //can addPriorityListener if looking to do collisions somewhere else
     Dispatch.addEventListener("PlayerMoveEvent",this.onPlayerMove); //can addPriorityListener if looking to do collisions somewhere else
     Dispatch.addEventListener("PlayerJoinEvent",this.onPlayerJoin);
     Dispatch.addEventListener("PlayerQuitEvent",this.onPlayerQuit);
+    Dispatch.addEventListener("GameInputDownEvent",this.onInputDown);
+    Dispatch.addEventListener("PlayerLoginEvent",this.onLoginEvent);
+    Dispatch.addEventListener("ChunkEvent",this.onChunk);
+
   }
 
   public static getInstance() : Core {
@@ -39,24 +48,8 @@ export default class Core {
   */
   preload = () => {
 
-    this.socket = io();
+    SocketHandler.getInstance().load();
 
-    console.log("preloaded");
-
-    this.socket.emit('login');
-    this.socket.on('login', (player: any) => {
-      //get and set player
-    });
-
-    //var name = prompt("What's your name?");
-    this.player = new Player(0,0, new Identity(""));
-
-    this.socket.on('chunk', (chunk: any) => {
-      if(Array.isArray(chunk.tiles)) { //TODO better check
-        this.chunk = new Chunk(chunk.tiles, Array.isArray(chunk.entities) ? chunk.entites : []);
-        console.log(this.chunk);
-      }
-    });
   }
 
   /*
@@ -79,7 +72,7 @@ export default class Core {
  private timer : number;
  private frames = 0;
  private updates = 0;
-
+ private state : GameState = GameState.LOGIN
   tick = () => {
     var now = performance.now();
 
@@ -90,14 +83,13 @@ export default class Core {
     this.updates += this.delta;
     this.delta = 0;
 
-    if(this.chunk)
-      Renderer.getInstance().renderChunk(this.chunk, this.player.centerX(), this.player.centerY());
+    if(this.state == GameState.GAME) {
+      if(this.chunk)
+        Renderer.getInstance().renderChunk(this.chunk, this.player.centerX(), this.player.centerY());
+    }
     this.frames++;
 
     if(performance.now() - this.timer >= 1000) {
-        console.log(this.frames);
-        console.log(this.updates);
-        console.log("-")
         this.timer += 1000;
         this.frames = 0;
         this.updates = 0;
@@ -108,25 +100,28 @@ export default class Core {
         this.tick();
       });
   }
+
   logic = (delta : number) => {
     this.input(delta)
   }
   input = (delta : number) => { //putting this in the loop means we have to deal with time. Need better polling
     var p = this.player
     if(Input.getInstance().isDown(InputType.UP)) {
-        Dispatch.fire("PlayerMoveEvent", new PlayerMoveEvent(p, p.getLocation(), p.getLocation().plusY(-8*delta)));
+        Dispatch.fire(new PlayerMoveEvent(p, p.getLocation(), p.getLocation().plusY(-8*delta)));
     }
     if(Input.getInstance().isDown(InputType.DOWN)) {
-        Dispatch.fire("PlayerMoveEvent", new PlayerMoveEvent(p, p.getLocation(), p.getLocation().plusY(8*delta)));
+        Dispatch.fire(new PlayerMoveEvent(p, p.getLocation(), p.getLocation().plusY(8*delta)));
     }
     if(Input.getInstance().isDown(InputType.LEFT)) {
-      Dispatch.fire("PlayerMoveEvent", new PlayerMoveEvent(p, p.getLocation(), p.getLocation().plusX(-8*delta)));
+      Dispatch.fire(new PlayerMoveEvent(p, p.getLocation(), p.getLocation().plusX(-8*delta)));
     }
     if(Input.getInstance().isDown(InputType.RIGHT)) {
-      Dispatch.fire("PlayerMoveEvent", new PlayerMoveEvent(p, p.getLocation(), p.getLocation().plusX(8*delta)));
+      Dispatch.fire(new PlayerMoveEvent(p, p.getLocation(), p.getLocation().plusX(8*delta)));
     }
   }
-
+  onEntityMove = (e : EntityMoveEvent) => {
+    this.chunk.getEntity(e.getEntityID()).setLocation(e.getTo());
+  }
   onPlayerMove = (e : PlayerMoveEvent) => {
     //allow or disallow
 
@@ -138,14 +133,32 @@ export default class Core {
   }
 
   onPlayerJoin = (e : PlayerJoinEvent) => {
-
+    console.log(e.getPlayer().getName() + e.getMessage());
+    this.chunk.setEntity(e.getPlayer().getEntityID(), e.getPlayer());
+    console.log(this.chunk)
   }
 
   onPlayerQuit = (e : PlayerQuitEvent) => {
-
+    this.chunk.removeEntity(e.getPlayer().getEntityID());
+    console.log(e);
   }
 
-  /*
+  onInputDown = (e : GameInputDownEvent) => {
+    if(e.getInputType()===InputType.FULLSCREEN) {
+      Renderer.getInstance().toggleFullScreen();
+    }
+  }
+
+  onLoginEvent = (e : PlayerLoginEvent) => {
+    console.log("Successfully authenticated.")
+    this.player = e.getPlayer();
+    this.state = GameState.GAME;
+  }
+
+  onChunk = (e : ChunkEvent) => {
+    this.chunk = e.getChunk();
+  }
+   /*
   * Stuff to do when window is closing
   */
 
@@ -154,4 +167,8 @@ export default class Core {
     console.log("exited");
     //should remove listeners, the syntax is annoying rn.
   }
+}
+
+enum GameState {
+  LOGIN, GAME
 }

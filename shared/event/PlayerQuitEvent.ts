@@ -3,14 +3,14 @@ import Player from "../player";
 
 export default class PlayerQuitEvent extends PlayerEvent {
 
-  constructor(player : Player, private quitMessage : String)	 {
+  constructor(player : Player, private quitMessage : string)	 {
     super(player);
   }
-  getEventName = ​() : String => {
+  getEventName = ​() : string => {
     return "PlayerQuitEvent";
   }
 
-  getMessage = () : String => {
+  getMessage = () : string => {
     return this.quitMessage;
   }
 }

@@ -35,5 +35,10 @@ export default class GameLocation {
   newChunkY = (y: number): GameLocation  =>{
     return new GameLocation(this.x, this.y, this.chunkX, y);
   }
+
+  public static fromPacket = (locationPacket : any) : GameLocation => {
+      return new GameLocation(locationPacket.x, locationPacket.y, locationPacket.chunkX, locationPacket.chunkY)
+  }
+
   //modifying methods return a new chunk, to be loaded and put onto the server
 }

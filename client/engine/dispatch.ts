@@ -2,7 +2,7 @@ import Renderer from "../graphics/Renderer";
 import Core from "./core";
 import Keyboard from "./keyboard";
 import GameEvent from "../../shared/event/event";
-const uuidv4 = require("uuid/v4")
+import * as uuidv4 from "uuid/v4";
 
 export default class Dispatch {
   //modifiable
@@ -25,7 +25,7 @@ export default class Dispatch {
   public static addPriorityListener = (eventName : string, callback :  { (event: GameEvent): void; }) : string => Dispatch.getInstance().addPriorityListener(eventName, callback)
   public static removePriorityListener = (eventName : string, id : string) => Dispatch.getInstance().removePriorityListener(eventName, id)
 
-  public static fire = (eventName : string, event: GameEvent) => Dispatch.getInstance().fire(eventName, event)
+  public static fire = (event: GameEvent) => Dispatch.getInstance().fire(event)
 
   private addPriorityListener = (eventName : string, callback :  { (event: GameEvent): void; }) : string  => {
     let id = uuidv4();
@@ -48,14 +48,14 @@ export default class Dispatch {
   private removeEventListener = (eventName : string, id : string) => {
     delete this.listeners[eventName][id];
   }
-  private fire(eventName : string, event: GameEvent) {
-    if(eventName in this.priorityListeners)
-      for(const listener of Object.keys(this.priorityListeners[eventName])) {
-        this.priorityListeners[eventName][listener](event);
+  private fire(event: GameEvent) {
+    if(event.getEventName() in this.priorityListeners)
+      for(const listener of Object.keys(this.priorityListeners[event.getEventName()])) {
+        this.priorityListeners[event.getEventName()][listener](event);
       }
-    if(eventName in this.listeners)
-      for(const listener of Object.keys(this.listeners[eventName])) {
-        this.listeners[eventName][listener](event);
+    if(event.getEventName() in this.listeners)
+      for(const listener of Object.keys(this.listeners[event.getEventName()])) {
+        this.listeners[event.getEventName()][listener](event);
       }
   }
 }
