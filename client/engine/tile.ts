@@ -3,7 +3,7 @@ import Renderer from "../graphics/Renderer";
 export default class Tile {
   public static readonly WIDTH = 16;
   public static readonly HEIGHT = 16;
-  private static readonly TILES = 2;
+  public static readonly TILES = 3;
   private static readonly textures : ImageBitmap[] = [];
   private static loadedAll = false;
 
@@ -12,10 +12,15 @@ export default class Tile {
   var promises : Promise<void>[]  = [];
     for(var i = 0; i<tileNumber; i++) {
       const g = i;
-      promises[i] = Tile.loadTexture(i).then((imageData) => {
+      promises[i] = Tile.loadTexture(i.toString()).then((imageData) => {
         createImageBitmap(imageData).then(renderer => { Tile.textures[g] = renderer; })
       })
     }
+    //just add the player sprite for now
+    promises[i] = Tile.loadTexture("player").then((imageData) => {
+      createImageBitmap(imageData).then(renderer => { Tile.textures[Tile.TILES] = renderer; }).catch((e) => { console.log(e);})
+    })
+
     try {
       await Promise.all(promises);
       Tile.loadedAll = true;
@@ -24,7 +29,7 @@ export default class Tile {
       console.log(e);
     }
   }
-  private static loadTexture(id : Number) : Promise<ImageData> {
+  private static loadTexture(id : string) : Promise<ImageData> {
       try {
         const url = require('../../dist/tiles/'+id+'.png')
         return this.convertURIToImageData(url);
@@ -38,7 +43,8 @@ export default class Tile {
     return Tile.loadedAll;
   }
   image = () : ImageBitmap => {
-    if(this.id <Tile.TILES)
+
+    if(this.id <=Tile.TILES)
       return Tile.textures[this.id];
     return null;
   }

@@ -88,21 +88,30 @@ export default class Renderer {
     this.canvas.getContext("2d").clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     var cam = new BoundingBox(cameraX-(cameraWidth/2), cameraY-(cameraHeight/2), cameraWidth, cameraHeight);
+    for(var zz = 0; zz<c.tiles[0][0].length; zz++) {
 
-    for(var xx = Math.floor(cam.x / (Tile.WIDTH * Renderer.ZOOM)); xx<Math.ceil((cam.x+cameraWidth) / (Tile.WIDTH * Renderer.ZOOM)); xx++) {
-      for(var yy = Math.floor(cam.y / (Tile.HEIGHT * Renderer.ZOOM)); yy<Math.ceil((cam.y+cameraHeight) / (Tile.HEIGHT * Renderer.ZOOM)); yy++) {
-          const relPosX = ((xx*Tile.WIDTH*Renderer.ZOOM)-cam.x);
-          const relPosY = ((yy*Tile.HEIGHT*Renderer.ZOOM)-cam.y);
-
-          this.canvas.getContext("2d").drawImage(new Tile(c.tiles[xx][yy]).image(), relPosX, relPosY);
+        for(var yy = Math.floor(cam.y / (Tile.HEIGHT * Renderer.ZOOM))-1; yy<Math.ceil((cam.y+cameraHeight) / (Tile.HEIGHT * Renderer.ZOOM)); yy++) {
+          for(var xx = Math.floor(cam.x / (Tile.WIDTH * Renderer.ZOOM))-1; xx<Math.ceil((cam.x+cameraWidth) / (Tile.WIDTH * Renderer.ZOOM)); xx++) {
+            if(xx < 0) xx = 0;
+            if(yy < 0) yy = 0;
+              const relPosX = ((xx*Tile.WIDTH*Renderer.ZOOM)-cam.x);
+              let relPosY = ((yy*Tile.HEIGHT*Renderer.ZOOM)-cam.y);
+              if(c.tiles[xx][yy][zz] != -1) {
+                console.log(c.tiles[xx][yy][zz]);
+                const img = new Tile(c.tiles[xx][yy][zz]).image();
+                if(img.height > Tile.HEIGHT) {
+                  relPosY -= ((img.height / (Tile.HEIGHT*Renderer.ZOOM))-1)*Tile.HEIGHT*Renderer.ZOOM;
+                }
+                this.canvas.getContext("2d").drawImage(img, relPosX, relPosY);
+              }
+          }
+          console.log("zz- "+zz);
+          if(zz+1===c.tiles[0][0].length && (y >= yy*Tile.HEIGHT || (y < 0 && yy == 0)) && y < (yy+1)*Tile.HEIGHT) {
+            //render the player
+            this.canvas.getContext("2d").drawImage(new Tile(Tile.TILES).image(), ((x*Renderer.ZOOM)-(Player.WIDTH*Renderer.ZOOM/2)-cam.x), ((y*Renderer.ZOOM)-(Player.HEIGHT*Renderer.ZOOM/2)-cam.y), Player.WIDTH*Renderer.ZOOM, Player.HEIGHT*Renderer.ZOOM);
+          }
       }
     }
-    //render the player
-    createImageBitmap(Tile.solid(Player.WIDTH, Player.HEIGHT, 255,255,255)).then(renderer => {
-      this.canvas.getContext("2d").drawImage(renderer, 0, 0, Tile.WIDTH, Tile.HEIGHT, ((x*Renderer.ZOOM)-(Player.WIDTH*Renderer.ZOOM/2)-cam.x), ((y*Renderer.ZOOM)-(Player.HEIGHT*Renderer.ZOOM/2)-cam.y), Player.WIDTH*Renderer.ZOOM, Player.HEIGHT*Renderer.ZOOM);
-    }).catch((e)=> {
-      console.log(e);
-    })
 
 
   }

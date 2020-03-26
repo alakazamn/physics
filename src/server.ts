@@ -26,7 +26,7 @@ io.set('authorization', function (handshakeData, callback) {
 io.on('connection', function(socket: Socket){
   console.log('Connection');
   socket.on('login', function(){
-      socket.emit('chunk', lakes(500, 500));
+      socket.emit('chunk', randomChunk(500, 500));
   });
   socket.on('disconnect', function(){
     console.log('Quit.');
@@ -38,19 +38,6 @@ http.listen(3000, function() {
   console.log('listening on *:3000');
 });
 
-function lakes(width : number, height : number) : Chunk {
-  var tiles : number[][] = [];
-  for(var x = 0; x<width; x++) {
-    tiles[x] = [];
-    for(var y = 0; y<height; y++) {
-      var random = Math.random();
-      random += touching(x,y,tiles)/10;
-
-      tiles[x][y] = random > .9 ? 1 : 0;
-    }
-  }
-  return new Chunk(tiles, []);
-}
 function touching(i : number,  j : number, tiles : number[][]) : number {
     var count = 0;
    if(j != 0)  // to the top
@@ -68,11 +55,18 @@ function touching(i : number,  j : number, tiles : number[][]) : number {
   return count;
 }
 function randomChunk(width : number, height : number) : Chunk {
-  var tiles : number[][] = [];
+  var tiles : number[][][] = [];
   for(var x = 0; x<width; x++) {
     tiles[x] = [];
     for(var y = 0; y<height; y++) {
-      tiles[x][y] = Math.round(Math.random());
+      tiles[x][y] = [];
+      tiles[x][y][0] = Math.floor(Math.random() * 2);
+
+      if(tiles[x][y][0] == 0) {
+        tiles[x][y][1] = Math.random() > .5 ? 2 : -1;
+      } else {
+        tiles[x][y][1] = -1;
+      }
     }
   }
   return new Chunk(tiles, []);
