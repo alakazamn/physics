@@ -1,6 +1,5 @@
-import Player from "../shared/player";
-import Chunk from "../shared/chunk";
 import * as _ from "lodash";
+import { Chunk, Player } from "./shared";
 
 export default class Town {
   public constructor(public chunks : Chunk[][], public players : Player[]) {
@@ -11,7 +10,7 @@ export default class Town {
   }
   public getPlayer(playerID : string) {
     let index = _.findIndex(this.players, (a) => { return a.getIdentity().id === playerID})
-    if(index == -1) return null;
+    if(index === -1) return null;
     else return this.players[index];
   }
   public getOnlinePlayers() : Player[] {

@@ -1,7 +1,6 @@
-import Chunk from '../../shared/chunk';
 import Tile from '../engine/tile';
-import BoundingBox from '../../shared/boundingbox';
-import Player from '../../shared/player';
+import { BoundingBox, Player } from '../../shared/shared';
+import { Chunk } from '../../shared/chunk';
 
 export default class Renderer {
   public static ZOOM : number = 3;
@@ -105,6 +104,7 @@ export default class Renderer {
               }
           }
           for(var entity of c.getEntities()) {
+            if(!entity) continue;
             if(zz+1===c.tiles[0][0].length && (entity.y >= yy*Tile.HEIGHT || (entity.y < 0 && yy == 0)) && entity.y < (yy+1)*Tile.HEIGHT) {
               //render the player
               this.canvas.getContext("2d").drawImage(new Tile(Tile.TILES).image(), ((entity.x*Renderer.ZOOM)-(Player.WIDTH*Renderer.ZOOM/2)-cam.x), ((entity.y*Renderer.ZOOM)-(Player.HEIGHT*Renderer.ZOOM/2)-cam.y), Player.WIDTH*Renderer.ZOOM, Player.HEIGHT*Renderer.ZOOM);

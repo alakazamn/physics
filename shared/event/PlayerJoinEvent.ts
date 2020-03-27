@@ -1,7 +1,6 @@
-import PlayerEvent from "./PlayerEvent";
-import Player from "../player";
+import { Player, PlayerEvent } from "../shared";
 
-export default class PlayerJoinEvent extends PlayerEvent {
+export class PlayerJoinEvent extends PlayerEvent {
 
   constructor(player : Player, private joinMessage : string)	 {
     super(player);

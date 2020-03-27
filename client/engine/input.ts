@@ -1,8 +1,7 @@
-import Renderer from "../graphics/Renderer";
-import Core from "./core";
-import Keyboard from "./keyboard";
 import Dispatch from "./dispatch";
-import GameInputEvent, { GameInputUpEvent, GameInputDownEvent } from "../../shared/event/GameInputEvent";
+import Keyboard from "./keyboard";
+import { GameInputUpEvent, GameInputDownEvent } from "../event/GameInputEvent";
+
 
 export default class Input {
   //modifiable

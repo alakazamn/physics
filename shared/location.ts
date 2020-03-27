@@ -1,4 +1,4 @@
-export default class GameLocation {
+export class GameLocation {
   public constructor(readonly x : number, readonly y: number, readonly chunkX, readonly chunkY) {
 
   }

@@ -1,7 +1,7 @@
-import GameEvent from "./event";
 import Input, { InputType } from "../../client/engine/input";
+import { GameEvent } from "../../shared/shared";
 
-export default class GameInputEvent extends GameEvent {
+export class GameInputEvent extends GameEvent {
 
   constructor(private inputType : InputType)	 {
     super();

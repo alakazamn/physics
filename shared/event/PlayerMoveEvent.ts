@@ -1,8 +1,7 @@
-import Player from "../player";
-import GameLocation from "../location";
-import PlayerEvent from "./PlayerEvent";
+import { PlayerEvent, GameLocation, Player } from "../shared";
 
-export default class PlayerMoveEvent extends PlayerEvent {
+
+export class PlayerMoveEvent extends PlayerEvent {
 
   constructor(player : Player, private from : GameLocation, private to : GameLocation)	 {
     super(player);

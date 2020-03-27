@@ -1,4 +1,4 @@
-import { IdentityPacket } from "./IdentityPacket";
+import { IdentityPacket } from "../shared";
 
 
 export interface PlayerPacket {

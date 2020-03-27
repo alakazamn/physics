@@ -1,7 +1,6 @@
-import GameEvent from "./event";
-import Chunk from "../chunk";
+import { Chunk, GameEvent } from "../shared";
 
-export default class ChunkEvent extends GameEvent {
+export class ChunkEvent extends GameEvent {
 
   constructor(private chunk : Chunk)	 {
     super();

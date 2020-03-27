@@ -1,7 +1,6 @@
-import Renderer from "../graphics/Renderer";
+
 import Input  from "./input";
 import { InputType }  from "./input";
-import Core from "./core";
 
 export default class Keyboard {
   //modifiable

@@ -1,6 +1,6 @@
-import GameLocation from "./location";
+import { GameLocation } from "./shared";
 
-export default class BoundingBox extends GameLocation {
+export class BoundingBox extends GameLocation {
   public constructor(public x : number, public y: number, public width: number, public height: number) {
     super(x,y,0,0); //TODO CHUNKS
   }
@@ -18,7 +18,7 @@ export default class BoundingBox extends GameLocation {
   getLocation = () => {
     return new GameLocation(this.x,this.y, 0,0); //fix chunks
   }
-  
+
   setX = (x: number) =>{
     this.x = x;
   }

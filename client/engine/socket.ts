@@ -1,21 +1,5 @@
-import Renderer from "../graphics/Renderer";
-import Core from "./core";
-import Keyboard from "./keyboard";
-import GameEvent from "../../shared/event/event";
-import { PlayerPacket } from "../../shared/packet/PlayerPacket";
-import Player from "../../shared/player";
-import PlayerLoginEvent from "../../shared/event/PlayerLoginEvent";
-import Identity from "../../shared/social/identity";
 import Dispatch from "./dispatch";
-import Chunk from "../../shared/chunk";
-import { chunk } from "lodash";
-import ChunkEvent from "../../shared/event/ChunkEvent";
-import PlayerMoveEvent from "../../shared/event/PlayerMoveEvent";
-import GameLocation from "../../shared/location";
-import EntityMoveEvent from "../../shared/event/EntityMoveEvent";
-import PlayerJoinEvent from "../../shared/event/PlayerJoinEvent";
-import PlayerQuitEvent from "../../shared/event/PlayerQuitEvent";
-const uuidv4 = require("uuid/v4")
+import { PlayerPacket, PlayerLoginEvent, Player, ChunkEvent, Chunk, GameLocation, EntityMoveEvent, PlayerJoinEvent, PlayerQuitEvent, PlayerMoveEvent } from "../shared";
 
 export default class SocketHandler {
   //modifiable
@@ -50,7 +34,6 @@ export default class SocketHandler {
     });
 
     this.socket.on('event', (eventPacket: any) => {
-      console.log("Received server data: " + JSON.stringify(eventPacket))
       if(eventPacket.name === "EntityMoveEvent") {
         var to : GameLocation = GameLocation.fromPacket(eventPacket.to)
         var from : GameLocation = GameLocation.fromPacket(eventPacket.from)
@@ -59,12 +42,13 @@ export default class SocketHandler {
       }
       else if(eventPacket.name === "PlayerJoinEvent") {
         var player = Player.fromPacket(eventPacket.player);
-        var message = eventPacket.message;
+        var message = eventPacket.joinMessage;
         Dispatch.fire(new PlayerJoinEvent(player, message));
       }
       else if(eventPacket.name === "PlayerQuitEvent") {
+        console.log(eventPacket)
         var player = Player.fromPacket(eventPacket.player);
-        var message = eventPacket.message;
+        var message = eventPacket.quitMessage;
         Dispatch.fire(new PlayerQuitEvent(player, message));
       }
 
@@ -75,7 +59,6 @@ export default class SocketHandler {
   }
 
   onPlayerMove = (e : PlayerMoveEvent) => {
-    console.log(e.packet());
     this.socket.emit('event', e.packet());
   }
 }

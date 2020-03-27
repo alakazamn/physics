@@ -1,6 +1,5 @@
-const uuidv4 = require("uuid/v4")
 
-export default class GameEvent {
+export class GameEvent {
   result: EventResult;
   getEventName = ​() : string => {
     return "Event";

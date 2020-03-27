@@ -1,22 +1,16 @@
 import { Socket } from "socket.io";
-
 import * as express from 'express';
 import { Request, Response } from "express";
-import Chunk from "../shared/chunk";
-import PlayerJoinEvent from "../shared/event/PlayerJoinEvent";
-import Player from "../shared/player";
-import Identity from "../shared/social/identity";
-import PlayerQuitEvent from "../shared/event/PlayerQuitEvent";
 
-var app = require('express')();
+var app = express();
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
-import * as uuidv4 from "uuid/v4";
-import GameLocation from "../shared/location";
+
+//import * as uuidv4 from "uuid/v4";
 import Town from "./town";
-import _ = require("lodash");
-import PlayerMoveEvent from "../shared/event/PlayerMoveEvent";
-import EntityMoveEvent from "../shared/event/EntityMoveEvent";
+import { GameLocation, Player, Chunk, Identity, PlayerJoinEvent, EntityMoveEvent, PlayerQuitEvent } from "./shared";
+
+import * as _ from "lodash";
 
 var serverVersion = "0.1";
 
@@ -38,27 +32,24 @@ var map = randomTown(10, 10);
 var spawnLocation = new GameLocation(100, 100, 0, 0);
 
 console.log("Setting up socket...")
-io.on('connection', function(socket: Socket){
-  var player : Player;
-  var id : string;
+io.on('connection', function(socket){
   console.log('Connection');
   socket.on('login', function(uuid : string) {
-      id = uuid;
       var chunk : Chunk;
       console.log("Received login... forwarding login packet")
       if(map.getPlayer(uuid)) {
-        player = map.getPlayer(uuid);
-        chunk = map.chunks[player.chunkX][player.chunkY];
+        socket.player = map.getPlayer(uuid);
+        chunk = map.chunks[socket.player.chunkX][socket.player.chunkY];
       } else {
-        player = new Player(spawnLocation.getX(),spawnLocation.getY(), new Identity("TODO", uuid)) //TODO
-        map.addPlayer(player);
+        socket.player = new Player(spawnLocation.getX(),spawnLocation.getY(), new Identity("TODO", uuid)) //TODO
+        map.addPlayer(socket.player);
 
         chunk = map.chunks[spawnLocation.chunkX][spawnLocation.chunkY];
       }
-      player.setOnline(true);
+      socket.player.setOnline(true);
 
-      socket.emit('login', player)
-      socket.broadcast.emit('event', new PlayerJoinEvent(player, uuid + " joined the server").packet());
+      socket.emit('login', socket.player)
+      socket.broadcast.emit('event', new PlayerJoinEvent(socket.player, uuid + " joined the server").packet());
       console.log(uuid + " joined the server")
 
       emitChunk();
@@ -67,33 +58,30 @@ io.on('connection', function(socket: Socket){
     if(eventPacket.name === "PlayerMoveEvent") {
       var to : GameLocation = GameLocation.fromPacket(eventPacket.to)
       var from : GameLocation = GameLocation.fromPacket(eventPacket.from)
-      var player = map.getPlayer(Player.fromPacket(eventPacket.player).getIdentity().id)
-      player.setLocation(to);
+      var p = map.getPlayer(Player.fromPacket(eventPacket.player).getIdentity().id)
+      if(!p) return
 
-      socket.broadcast.emit('event', new EntityMoveEvent(player.getEntityID(), to, from).packet());
+      p.setLocation(to);
+      socket.broadcast.emit('event', new EntityMoveEvent(p.getEntityID(), to, from).packet());
       //do operations to see if this is allowed
     }
   });
   socket.on('disconnect', function(){
-    if(player) {
-      player.setOnline(false);
-      socket.broadcast.emit('event', new PlayerQuitEvent(player, player.getName() + " left the server").packet());
-      console.log(player.getName() + "left the server");
-
-    }
+      if(!socket.player) return;
+      socket.player.setOnline(false);
+      socket.broadcast.emit('event', new PlayerQuitEvent(socket.player, socket.player.getEntityID() + " left the server").packet());
+      console.log(socket.player.getName() + " left the server");
   });
 
   const emitChunk = () => {
     console.log(map.getOnlinePlayers());
-    let players = _.filter(map.getOnlinePlayers(), (elem) => { return elem.chunkX== player.chunkX && elem.chunkY == player.chunkY && elem.getIdentity().id !== player.getIdentity().id });
-    var chunk : any = _.cloneDeep(map.chunks[player.chunkX][player.chunkY]);
-    var entities = _.cloneDeep(map.chunks[player.chunkX][player.chunkY].getEntities());
-    for(player of players) {
+    let players = _.filter(map.getOnlinePlayers(), (elem) => { return elem.chunkX== socket.player.chunkX && elem.chunkY == socket.player.chunkY && elem.getIdentity().id !== socket.player.getIdentity().id });
+    var chunk : any = _.cloneDeep(map.chunks[socket.player.chunkX][socket.player.chunkY]);
+    var entities = _.cloneDeep(map.chunks[socket.player.chunkX][socket.player.chunkY].getEntities());
+    for(var player of players) {
       entities.push(player);
     }
-    console.log(JSON.stringify(entities));
     chunk.entity = entities;
-    console.log(JSON.stringify(chunk));
     socket.emit('chunk', chunk);
   }
 });

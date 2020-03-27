@@ -1,7 +1,5 @@
-import Renderer from "../graphics/Renderer";
-import Core from "./core";
-import Keyboard from "./keyboard";
-import GameEvent from "../../shared/event/event";
+import { GameEvent } from "../shared";
+
 import * as uuidv4 from "uuid/v4";
 
 export default class Dispatch {

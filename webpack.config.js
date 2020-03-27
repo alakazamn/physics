@@ -38,7 +38,7 @@ const clientConfig = {
 }
 const serverConfig = {
   entry: {
-    server: './src/server.ts'
+    server: './server/server.ts'
   },
   mode: NODE_ENV,
   watch: NODE_ENV === 'development',

@@ -1,7 +1,6 @@
-import Player from "../player";
-import GameEvent from "./event";
+import { GameEvent, Player } from "../shared";
 
-export default class PlayerEvent extends GameEvent {
+export class PlayerEvent extends GameEvent {
 
   constructor(private player : Player)	 {
     super();

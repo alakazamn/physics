@@ -1,8 +1,6 @@
-import Player from "../player";
-import GameLocation from "../location";
-import GameEvent from "./event";
+import { GameLocation, GameEvent } from "../shared";
 
-export default class EntityMoveEvent extends GameEvent {
+export class EntityMoveEvent extends GameEvent {
 
   constructor(private entityID : string, private from : GameLocation, private to : GameLocation)	 {
     super();

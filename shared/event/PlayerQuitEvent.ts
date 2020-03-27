@@ -1,7 +1,6 @@
-import PlayerEvent from "./PlayerEvent";
-import Player from "../player";
+import { PlayerEvent, Player } from "../shared";
 
-export default class PlayerQuitEvent extends PlayerEvent {
+export class PlayerQuitEvent extends PlayerEvent {
 
   constructor(player : Player, private quitMessage : string)	 {
     super(player);

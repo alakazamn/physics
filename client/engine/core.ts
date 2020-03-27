@@ -1,22 +1,15 @@
 import Renderer from "../graphics/Renderer";
+import Dispatch from "./dispatch";
+import SocketHandler from "./socket";
+
+import Keyboard from "./keyboard";
 import { InputType } from "./input";
 import Input from "./input";
-import Player from "../../shared/player";
-import { Direction } from "../../shared/direction";
+
 import * as io from 'socket.io-client';
-import Chunk from "../../shared/chunk";
-import Identity from "../../shared/social/identity";
-import Keyboard from "./keyboard";
-import PlayerJoinEvent from "../../shared/event/PlayerJoinEvent";
-import Dispatch from "./dispatch";
-import GameEvent, { EventResult } from "../../shared/event/event";
-import PlayerMoveEvent from "../../shared/event/PlayerMoveEvent";
-import PlayerQuitEvent from "../../shared/event/PlayerQuitEvent";
-import { GameInputDownEvent } from "../../shared/event/GameInputEvent";
-import SocketHandler from "./socket";
-import ChunkEvent from "../../shared/event/ChunkEvent";
-import PlayerLoginEvent from "../../shared/event/PlayerLoginEvent";
-import EntityMoveEvent from "../../shared/event/EntityMoveEvent";
+import { Player, Chunk, PlayerMoveEvent, EntityMoveEvent, EventResult, PlayerJoinEvent, PlayerQuitEvent, PlayerLoginEvent, ChunkEvent } from "../shared";
+import { GameInputDownEvent } from "../event/GameInputEvent";
+
 export default class Core {
   private static instance : Core;
   private active : Boolean = false;
@@ -120,6 +113,7 @@ export default class Core {
     }
   }
   onEntityMove = (e : EntityMoveEvent) => {
+    console.log(e);
     this.chunk.getEntity(e.getEntityID()).setLocation(e.getTo());
   }
   onPlayerMove = (e : PlayerMoveEvent) => {
@@ -140,7 +134,7 @@ export default class Core {
 
   onPlayerQuit = (e : PlayerQuitEvent) => {
     this.chunk.removeEntity(e.getPlayer().getEntityID());
-    console.log(e);
+    console.log(this.chunk);
   }
 
   onInputDown = (e : GameInputDownEvent) => {
