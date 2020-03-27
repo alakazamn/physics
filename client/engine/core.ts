@@ -52,7 +52,7 @@ export default class Core {
   load = () => {
     this.active = true;
     Renderer.getInstance().initialize();
-    Keyboard.getInstance().load();
+    Input.getInstance().load();
     this.lastTime = performance.now()
     this.timer = performance.now();
     this.tick();
@@ -100,20 +100,19 @@ export default class Core {
   input = (delta : number) => { //putting this in the loop means we have to deal with time. Need better polling
     var p = this.player
     if(Input.getInstance().isDown(InputType.UP)) {
-        Dispatch.fire(new PlayerMoveEvent(p, p.getLocation(), p.getLocation().plusY(-8*delta)));
+        Dispatch.fire(new PlayerMoveEvent(p, p.getLocation(), p.getLocation().plusY(-4*delta)));
     }
     if(Input.getInstance().isDown(InputType.DOWN)) {
-        Dispatch.fire(new PlayerMoveEvent(p, p.getLocation(), p.getLocation().plusY(8*delta)));
+        Dispatch.fire(new PlayerMoveEvent(p, p.getLocation(), p.getLocation().plusY(4*delta)));
     }
     if(Input.getInstance().isDown(InputType.LEFT)) {
-      Dispatch.fire(new PlayerMoveEvent(p, p.getLocation(), p.getLocation().plusX(-8*delta)));
+      Dispatch.fire(new PlayerMoveEvent(p, p.getLocation(), p.getLocation().plusX(-4*delta)));
     }
     if(Input.getInstance().isDown(InputType.RIGHT)) {
-      Dispatch.fire(new PlayerMoveEvent(p, p.getLocation(), p.getLocation().plusX(8*delta)));
+      Dispatch.fire(new PlayerMoveEvent(p, p.getLocation(), p.getLocation().plusX(4*delta)));
     }
   }
   onEntityMove = (e : EntityMoveEvent) => {
-    console.log(e);
     this.chunk.getEntity(e.getEntityID()).setLocation(e.getTo());
   }
   onPlayerMove = (e : PlayerMoveEvent) => {
@@ -129,12 +128,11 @@ export default class Core {
   onPlayerJoin = (e : PlayerJoinEvent) => {
     console.log(e.getPlayer().getName() + e.getMessage());
     this.chunk.setEntity(e.getPlayer().getEntityID(), e.getPlayer());
-    console.log(this.chunk)
   }
 
   onPlayerQuit = (e : PlayerQuitEvent) => {
+    console.log(e.getPlayer().getName() + e.getMessage());
     this.chunk.removeEntity(e.getPlayer().getEntityID());
-    console.log(this.chunk);
   }
 
   onInputDown = (e : GameInputDownEvent) => {

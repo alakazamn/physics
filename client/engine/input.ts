@@ -5,7 +5,8 @@ import { GameInputUpEvent, GameInputDownEvent } from "../event/GameInputEvent";
 
 export default class Input {
   //modifiable
-  inputState : Boolean[] = new Array(Object.keys(InputType).filter(k => (k as any) instanceof Boolean).length);
+  readonly keys = Object.keys(InputType).filter(k => (k as any) instanceof Boolean);
+  inputState : Boolean[] = new Array(this.keys.length);
 
 
   private static instance : Input;
@@ -33,12 +34,19 @@ export default class Input {
     Dispatch.fire(new GameInputDownEvent(i));
   }
 
-
+  onblur = () => {
+    for(var i = 0; i< this.inputState.length; i++) {
+        if(this.inputState[i]) {
+          this.up(i);
+        }
+    }
+  }
   /*
   * Stuff to do when game loads
   */
   load = () => {
     Keyboard.getInstance().load();
+    window.addEventListener("blur", this.onblur, false)
   }
 }
 

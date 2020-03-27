@@ -74,7 +74,6 @@ io.on('connection', function(socket){
   });
 
   const emitChunk = () => {
-    console.log(map.getOnlinePlayers());
     let players = _.filter(map.getOnlinePlayers(), (elem) => { return elem.chunkX== socket.player.chunkX && elem.chunkY == socket.player.chunkY && elem.getIdentity().id !== socket.player.getIdentity().id });
     var chunk : any = _.cloneDeep(map.chunks[socket.player.chunkX][socket.player.chunkY]);
     var entities = _.cloneDeep(map.chunks[socket.player.chunkX][socket.player.chunkY].getEntities());

@@ -23,12 +23,9 @@ export class Chunk {
     this.entity[index] = e;
   }
   public removeEntity = (id : string) => {
-    console.log("x="+id);
-    console.log(this.entity);
     let index = _.findIndex(this.entity, (a) => { return a.getEntityID() === id})
     if(index === -1) return null;
     else this.entity.splice(index,1);
-    console.log(this.entity);
   }
   public rows = () : number => {
     return this.tiles.length;

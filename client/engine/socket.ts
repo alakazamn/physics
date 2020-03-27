@@ -29,7 +29,6 @@ export default class SocketHandler {
 
     this.socket.on('chunk', (chunkPacket: any) => {
       console.log("Downloading chunk...")
-      console.log(Chunk.fromPacket(chunkPacket))
       Dispatch.fire(new ChunkEvent(Chunk.fromPacket(chunkPacket)));
     });
 
@@ -46,7 +45,6 @@ export default class SocketHandler {
         Dispatch.fire(new PlayerJoinEvent(player, message));
       }
       else if(eventPacket.name === "PlayerQuitEvent") {
-        console.log(eventPacket)
         var player = Player.fromPacket(eventPacket.player);
         var message = eventPacket.quitMessage;
         Dispatch.fire(new PlayerQuitEvent(player, message));

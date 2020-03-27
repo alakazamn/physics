@@ -89,10 +89,11 @@ export default class Renderer {
     var cam = new BoundingBox(cameraX-(cameraWidth/2), cameraY-(cameraHeight/2), cameraWidth, cameraHeight);
     for(var zz = 0; zz<c.tiles[0][0].length; zz++) {
 
-        for(var yy = Math.floor(cam.y / (Tile.HEIGHT * Renderer.ZOOM))-1; yy<Math.ceil((cam.y+cameraHeight) / (Tile.HEIGHT * Renderer.ZOOM)); yy++) {
+        for(var yy = Math.floor(cam.y / (Tile.HEIGHT * Renderer.ZOOM))-1; yy-2<Math.ceil((cam.y+cameraHeight) / (Tile.HEIGHT * Renderer.ZOOM)); yy++) {
           for(var xx = Math.floor(cam.x / (Tile.WIDTH * Renderer.ZOOM))-1; xx<Math.ceil((cam.x+cameraWidth) / (Tile.WIDTH * Renderer.ZOOM)); xx++) {
             if(xx < 0) xx = 0;
             if(yy < 0) yy = 0;
+            if(yy>=c.tiles[xx].length) continue;
               const relPosX = ((xx*Tile.WIDTH*Renderer.ZOOM)-cam.x);
               let relPosY = ((yy*Tile.HEIGHT*Renderer.ZOOM)-cam.y);
               if(c.tiles[xx][yy][zz] != -1) {
@@ -105,14 +106,14 @@ export default class Renderer {
           }
           for(var entity of c.getEntities()) {
             if(!entity) continue;
-            if(zz+1===c.tiles[0][0].length && (entity.y >= yy*Tile.HEIGHT || (entity.y < 0 && yy == 0)) && entity.y < (yy+1)*Tile.HEIGHT) {
+            if(zz+1===c.tiles[0][0].length && (entity.centerY() >= yy*Tile.HEIGHT || (entity.centerY() < 0 && yy == 0)) && entity.centerY() < (yy+1)*Tile.HEIGHT) {
               //render the player
-              this.canvas.getContext("2d").drawImage(new Tile(Tile.TILES).image(), ((entity.x*Renderer.ZOOM)-(Player.WIDTH*Renderer.ZOOM/2)-cam.x), ((entity.y*Renderer.ZOOM)-(Player.HEIGHT*Renderer.ZOOM/2)-cam.y), Player.WIDTH*Renderer.ZOOM, Player.HEIGHT*Renderer.ZOOM);
+                this.canvas.getContext("2d").drawImage(new Tile(Tile.TILES).image(), ((entity.centerX()*Renderer.ZOOM)-(Player.WIDTH*Renderer.ZOOM/2)-cam.x), ((entity.centerY()*Renderer.ZOOM)-(Player.HEIGHT*Renderer.ZOOM/2)-cam.y), Player.WIDTH*Renderer.ZOOM, Player.HEIGHT*Renderer.ZOOM);
             }
           }
           if(zz+1===c.tiles[0][0].length && (y >= yy*Tile.HEIGHT || (y < 0 && yy == 0)) && y < (yy+1)*Tile.HEIGHT) {
             //render the player
-            this.canvas.getContext("2d").drawImage(new Tile(Tile.TILES).image(), ((x*Renderer.ZOOM)-(Player.WIDTH*Renderer.ZOOM/2)-cam.x), ((y*Renderer.ZOOM)-(Player.HEIGHT*Renderer.ZOOM/2)-cam.y), Player.WIDTH*Renderer.ZOOM, Player.HEIGHT*Renderer.ZOOM);
+              this.canvas.getContext("2d").drawImage(new Tile(Tile.TILES).image(), ((x*Renderer.ZOOM)-(Player.WIDTH*Renderer.ZOOM/2)-cam.x), ((y*Renderer.ZOOM)-(Player.HEIGHT*Renderer.ZOOM/2)-cam.y), Player.WIDTH*Renderer.ZOOM, Player.HEIGHT*Renderer.ZOOM);
           }
       }
     }

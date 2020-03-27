@@ -6,7 +6,7 @@ export class PlayerEvent extends GameEvent {
     super();
   }
 
- getEventName = ​() : string => {
+  getEventName = ​() : string => {
     return "PlayerEvent";
   }
 
