@@ -97,7 +97,14 @@ export default class Core {
   }
 
   logic = (delta : number) => {
+    var p = this.player
+    if(!p) return;
+
     this.input(delta)
+
+    p.applyForce(new Force(0, 400, true));
+    p.setMoving(true);
+
     Dispatch.fire(new TickEvent(delta, this.chunk, this.player));
   }
   input = (delta : number) => { //putting this in the loop means we have to deal with time. Need better polling
@@ -111,13 +118,13 @@ export default class Core {
         //Dispatch.fire(new PlayerMoveEvent(p, p.getLocation(), p.getLocation().plusY(16*delta)));
     }
     if(Input.getInstance().isDown(InputType.LEFT)) {
-      p.applyForce(new Force(Math.PI, 400, true));
-      p.setMoving(true);
+      /*p.applyForce(new Force(Math.PI, 400, true));
+      p.setMoving(true);*/
     }
     if(Input.getInstance().isDown(InputType.RIGHT)) {
-      p.applyForce(new Force(0, 400, true));
+     /* p.applyForce(new Force(0, 400, true));
       p.setMoving(true);
-      //Dispatch.fire(new PlayerMoveEvent(p, p.getLocation(), p.getLocation().plusX(16*delta)));
+      //Dispatch.fire(new PlayerMoveEvent(p, p.getLocation(), p.getLocation().plusX(16*delta)));*/
     }
     if(p.getMoving() && !Input.getInstance().isDown(InputType.LEFT) && !Input.getInstance().isDown(InputType.RIGHT)) {
       Dispatch.fire(new PlayerStopEvent(p));
@@ -149,9 +156,11 @@ export default class Core {
     while(x<Chunk.WIDTH) {
       let height = Chunk.HEIGHT - Math.floor(Math.random()*8);
       let width = Math.min(Math.floor(Math.random()*4)+3, Chunk.WIDTH - x);
-      
+      if(lastHeight == -1 && height == 15) continue;
+      if(lastHeight == 15 && height == 15) continue;
       if(lastHeight != -1 && height < lastHeight && lastHeight - height > 3) continue;
-      if(height >= Chunk.HEIGHT-1) 
+
+      if(height >= Chunk.HEIGHT) 
         width = Math.min(4, width)
       lastHeight = height;
 
@@ -169,7 +178,6 @@ export default class Core {
         }
       }
       x+=width;
-
     }
     if(this.nextChunk) {
       this.chunk = this.nextChunk;
