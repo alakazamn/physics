@@ -67,6 +67,7 @@ export default class Core {
  private timer : number;
  private state : GameState = GameState.LOGIN
 
+  //a tick = every 1/20th of a second
   tick = () => {
     var now = performance.now();
 
@@ -112,21 +113,19 @@ export default class Core {
     if(Input.getInstance().isDown(InputType.UP)) {
       Dispatch.fire(new PlayerJumpEvent(p));
     }
-    if(Input.getInstance().isDown(InputType.DOWN)) {
-        //Dispatch.fire(new PlayerMoveEvent(p, p.getLocation(), p.getLocation().plusY(16*delta)));
-    }
-    if(Input.getInstance().isDown(InputType.LEFT)) {
-      /*p.applyForce(new Force(Math.PI, 400, true));
-      p.setMoving(true);*/
-    }
-    if(Input.getInstance().isDown(InputType.RIGHT)) {
-     /* p.applyForce(new Force(0, 400, true));
-      p.setMoving(true);
-      //Dispatch.fire(new PlayerMoveEvent(p, p.getLocation(), p.getLocation().plusX(16*delta)));*/
-    }
     if(p.getMoving() && !Input.getInstance().isDown(InputType.LEFT) && !Input.getInstance().isDown(InputType.RIGHT)) {
       Dispatch.fire(new PlayerStopEvent(p));
     }
+
+    //This game moves for you, so this code isn't necessary:
+    /*if(Input.getInstance().isDown(InputType.LEFT)) {
+      p.applyForce(new Force(Math.PI, 400, true));
+      p.setMoving(true);
+    }
+    if(Input.getInstance().isDown(InputType.RIGHT)) {
+     p.applyForce(new Force(0, 400, true));
+      p.setMoving(true);
+    }*/
   }
 
   onPlayerStop = (e : PlayerStopEvent) => {
@@ -148,28 +147,37 @@ export default class Core {
   currentState = () => {
     return this.state;
   }
+  /*
+    Random terrain generation
+  */
   generateChunk = (e : ChunkGenerateEvent) => {
     var tiles : boolean[][] = [];
     var x = 0;
     let lastHeight = -1;
     let startY = -1;
-    let buff = 10;
-    while(x<Chunk.WIDTH) {
-      let height = Chunk.HEIGHT - Math.floor(Math.random()*8);
+    let buff = 10; //it should progressively get harder as you go.
+
+    while(x<Chunk.WIDTH) {  //while we have more of the map to fill
+      let height = Chunk.HEIGHT - Math.floor(Math.random()*8); //generate a random terrain height
+
+      //and a random width, provided that it's not the first piece generated; otherwise, a width of 20:
       let width = startY == -1 ? 20 : Math.min(Math.floor(Math.random()*4)+3+buff, Chunk.WIDTH - x);
-      if(lastHeight == -1 && height == 15) continue;
-      if(lastHeight == 15 && height == 15) continue;
-      if(lastHeight != -1 && height < lastHeight && lastHeight - height > 3) continue;
+
+      if(lastHeight == -1 && height == 15) continue; //if it's the first, don't make the player fall into an empty void
+      if(lastHeight == 15 && height == 15) continue; //don't place two voids in a row 
+      if(lastHeight != -1 && height < lastHeight && lastHeight - height > 3) continue; //make sure all jumps are possible
 
       if(height >= Chunk.HEIGHT) 
-        width = Math.min(4, width)
+        width = Math.min(4, width) //voids should be at most 4 tiles wide
       else
-        buff--;
+        buff--; //decrease the safety buffer
+
       lastHeight = height;
 
       if(startY == -1) {
-        startY = height*Tile.HEIGHT - Player.HEIGHT-50;
+        startY = height*Tile.HEIGHT - Player.HEIGHT-50; //determine where to put the player
       }
+
       for(var xx = x; xx<x+width; xx++) {
         tiles[xx] = []
         for(var yy = 0; yy < Chunk.HEIGHT; yy++) {

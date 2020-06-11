@@ -3,6 +3,8 @@ import { SurfaceType } from './Engine'
 /*
   Represents a surface, with a coefficient of kinetic friction
   In this world, there's no static friction because it just seemed unnecessary
+
+  Somewhat obsolete, since I got rid of the ice surfaces...
 */
 
 export class Surface {

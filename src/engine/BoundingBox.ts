@@ -1,6 +1,5 @@
 import { Vector } from "./Engine";
 
-
 /*
     Represents a rectangle with position and two dimensions.
 */

@@ -90,6 +90,7 @@ export default class Physics {
   */
   onPhysicsMove = (e : PhysicsMoveEvent) => {
 
+    //if the user is dead, disallow left/right movement
     if(Core.getInstance().currentState() == GameState.DEATH) {
       e.getBody().setLocation(new Vector(e.getFrom().getX(), e.getTo().getY()));
       return;
@@ -97,18 +98,25 @@ export default class Physics {
 
     let chunk = Core.getInstance().currentChunk(); 
 
+
     /*
+      Collision handling for the player and the ground
+
+
       This gets a little complicated, but to check for collisions at discrete time intervals, 
       the system has to check for collisions retroactively, so that we don't miss a collision because
       we're only sampling every 1/20th of a second
 
-      Thus, we basically step one pixel at a time in each direction, checking if there's a collision.
+      Thus, we basically step one unit at a time in each direction, checking if there's a collision.
     */
     
     let xDT = e.getTo().getX() - e.getFrom().getX();
     let yDT = e.getTo().getY() - e.getFrom().getY();
 
-    //Collision handling for the player and the ground
+    // At smallest, the steps should be at a 1:1 with pixels
+    // I thought of this like the thing in chem where you have to
+    // come up with a formula from masses, and you divide until you get
+    // whole numbers 
     let steps = Math.ceil(Math.max(Math.abs(xDT), Math.abs(yDT)))
     if(steps == 0) return;
 
@@ -126,14 +134,15 @@ export default class Physics {
     for(var a = 0; a < steps; a++) {
       if(xDT != 0 && this.checkCollision(x + (xDT / steps),y,chunk)) {
         xDT = 0;
+        //If the player rams into a wall, mark them dead
         e.getBody().clearForces();
-        e.getBody().applyImpulse(new Force(Math.PI/2, 1500),0.5);
+        e.getBody().applyImpulse(new Force(Math.PI/2, 1500),0.5); //death animation
         Dispatch.fire(new PlayerDeathEvent(e.getBody() as Player));
         //e.getBody().stopH();
         e.setResult(EventResult.DENY);
         if(e.getBody() instanceof Player) {
           (e.getBody() as Player).setMoving(false);
-          (e.getBody() as Player).setJumping(true);
+          (e.getBody() as Player).setJumping(true); //death animation
         }
       }
       if(yDT !=0 && this.checkCollision(x,y + (yDT / steps),chunk)) {
@@ -171,11 +180,11 @@ export default class Physics {
     }
     e.getBody().setLocation(new Vector(x, y));
 
-    if(e.getBody() instanceof Player && y > Chunk.HEIGHT  * Tile.HEIGHT) {
+    if(e.getBody() instanceof Player && y > Chunk.HEIGHT  * Tile.HEIGHT) { //if the player falls into the void, mark them dead.
       e.getBody().clearForces();
-      e.getBody().applyImpulse(new Force(Math.PI/2, 1500),0.5);
-      Dispatch.fire(new PlayerDeathEvent(e.getBody() as Player));
-      (e.getBody() as Player).setJumping(true);
+      e.getBody().applyImpulse(new Force(Math.PI/2, 1500),0.5); //death animation
+      Dispatch.fire(new PlayerDeathEvent(e.getBody() as Player)); 
+      (e.getBody() as Player).setJumping(true); //death animation
     }
     return;
   }

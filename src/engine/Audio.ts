@@ -3,8 +3,8 @@ import Dispatch from "./Dispatch";
 import { EventResult, PlayerStopEvent, PlayerJumpEvent, PhysicsMoveEvent, PlayerDeathEvent } from "../event/Events";
 
 /* 
-  Handles collisions (normal forces too) and applying velocity-resistive / friction forces 
-  The actual logic that computates net force and determines acceleration / velocity is in engine/PhysicalObject.ts
+  Handles that music that I'm sure you love...
+  And sound effects too...
 */
 
 export default class AudioManager {

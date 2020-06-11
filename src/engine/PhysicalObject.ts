@@ -12,7 +12,7 @@ import Physics from "./Physics";
     and determines the object's acceleration.
 
     Over time, acceleration is accumulated into the object's velocity. 
-    This allows for realistic inertia.
+    This allows for quasi-realistic inertia.
 */
 
 export class PhysicalObject extends BoundingBox {
@@ -99,7 +99,7 @@ export class PhysicalObject extends BoundingBox {
     }
 
     /*
-       Returns the net force acting on an object, minus any normal force (for reasons explained in Force.ts)
+       Returns the net force acting on an object, minus any normal force (for reasons explained above and in Force.ts)
     */
     getNetForce() {
         var netForce = new Vector(0, 0);
@@ -157,7 +157,7 @@ export class PhysicalObject extends BoundingBox {
         //if the object has velocity from inertia, we should check that 
         //moving the object won't create collisions, and apply velocity-dependent / frictive forces:
         if(this.velocity.getX() == 0 && this.velocity.getY() == 0) return;
-            Dispatch.fire(new PhysicsMoveEvent(this, this.getLocation(), this.getLocation().plusVec(this.velocity)))
+            Dispatch.fire(new PhysicsMoveEvent(this, this.getLocation(), this.getLocation().plusVec(this.velocity))) //the Handler for this is in Physics.ts
     }
 
   }

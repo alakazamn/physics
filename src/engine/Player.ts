@@ -6,6 +6,9 @@ import { PhysicalObject } from "./Engine";
 
   Plus, we store whether or not the player is moving and jumping, so
   we can change the sprite (picture) for each state
+
+  There are some other parameters here that just keep 
+  track of where in the animation we are
 */
 
 export class Player extends PhysicalObject {
