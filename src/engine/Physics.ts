@@ -3,7 +3,7 @@ import Dispatch from "./Dispatch";
 import Core from "./Core";
 
 import { Player, Force, Surface } from "./Engine";
-import { EventResult, PlayerStopEvent, PlayerJumpEvent, PhysicsMoveEvent } from "../event/Events";
+import { EventResult, PlayerJumpEvent, PhysicsMoveEvent, PlayerDeathEvent } from "../event/Events";
 import Tile from "../graphics/Tile";
 import { TickEvent } from "../event/TickEvent";
 import { Chunk, Vector } from "./Engine";
@@ -161,14 +161,10 @@ export default class Physics {
     }
     e.getBody().setLocation(new Vector(x, y));
 
-    if(y > Chunk.HEIGHT  * Tile.HEIGHT) {
-      console.log("start over")
+    if(e.getBody() instanceof Player && y > Chunk.HEIGHT  * Tile.HEIGHT) {
+      Dispatch.fire(new PlayerDeathEvent(e.getBody() as Player));
     }
     return;
-  }
-
-  onPlayerStop = (e : PlayerStopEvent) => {
-
   }
 
 }

@@ -35,6 +35,7 @@ export default class Core {
     Dispatch.addEventListener("PlayerStopEvent",this.onPlayerStop);
     Dispatch.addEventListener("GameInputDownEvent",this.onInputDown);
     Dispatch.addEventListener("ChunkGenerateEvent",this.generateChunk);
+    Dispatch.addEventListener("PlayerDeathEvent",this.onDeath);
   }
 
   public static getInstance() : Core {
@@ -78,6 +79,9 @@ export default class Core {
     if(this.state == GameState.GAME) {
       if(this.chunk)
         Renderer.getInstance().renderChunk(this.chunk, this.player);
+    } else {
+      Renderer.getInstance().renderChunk(this.chunk, this.player)
+      Renderer.getInstance().drawDeath();
     }
 
     if(performance.now() - this.timer >= 1000) {
@@ -86,7 +90,9 @@ export default class Core {
 
     if(this.active)
       window.requestAnimationFrame(() => {
-        this.tick();
+        if(this.state == GameState.GAME) {
+          this.tick();
+        }
       });
   }
 
@@ -145,7 +151,7 @@ export default class Core {
       let width = Math.min(Math.floor(Math.random()*4)+3, Chunk.WIDTH - x);
       
       if(lastHeight != -1 && height < lastHeight && lastHeight - height > 3) continue;
-      if(height <= Chunk.HEIGHT-1) 
+      if(height >= Chunk.HEIGHT-1) 
         width = Math.min(4, width)
       lastHeight = height;
 
@@ -165,7 +171,6 @@ export default class Core {
       x+=width;
 
     }
-    console.log(startY);
     if(this.nextChunk) {
       this.chunk = this.nextChunk;
       this.nextChunk = new Chunk(tiles, [], startY);
@@ -184,8 +189,12 @@ export default class Core {
     console.log("exited");
     //should remove listeners, the syntax is annoying rn.
   }
+
+  onDeath = () => {
+    this.state = GameState.DEATH;
+  }
 }
 
 enum GameState {
-  LOGIN, GAME
+  LOGIN, GAME, DEATH
 }

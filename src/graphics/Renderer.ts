@@ -201,7 +201,14 @@ export default class Renderer {
     }
   }
 
-
+  drawDeath = () => {
+    var ctx = this.canvas.getContext("2d");
+    ctx.fillStyle = "#FFF";
+    ctx.font = '50px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif'
+    ctx.textAlign = "center";
+    ctx.fillText("You died", this.canvas.width/2, this.canvas.height/2);
+    ctx.fillStyle = "#000";
+  }
   hasLeft(c : Chunk, x : number, y: number) {
     return (c.tiles[x-1] && c.tiles[x-1][y]) || x-1 < 0;
   }
