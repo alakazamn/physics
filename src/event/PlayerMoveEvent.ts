@@ -1,19 +1,19 @@
 import { PlayerEvent } from "./PlayerEvent";
-import { Player, GameLocation } from "../Engine";
+import { Player, Vector } from "../engine/Engine";
 
 export class PlayerMoveEvent extends PlayerEvent {
 
-  constructor(player : Player, private from : GameLocation, private to : GameLocation)	 {
+  constructor(player : Player, private from : Vector, private to : Vector)	 {
     super(player);
   }
   getEventName = ​() : string => {
     return "PlayerMoveEvent";
   }
 
-  getFrom = ​() : GameLocation => {
+  getFrom = ​() : Vector => {
     return this.from;
   }
-  getTo = ​() : GameLocation => {
+  getTo = ​() : Vector => {
     return this.to;
   }
 }

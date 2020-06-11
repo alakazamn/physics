@@ -1,3 +1,7 @@
+/*
+  Undoubtedly, this came from the internet.
+  Where, I don't know. I don't want to take credit for it, though.
+*/
 const path = require('path');
 const nodeExternals = require('webpack-node-externals');
 
@@ -7,7 +11,7 @@ const {
 
 const clientConfig = {
   entry: {
-    client: './src/client.ts'
+    client: './src/main.ts'
   },
   mode: NODE_ENV,
   output: {

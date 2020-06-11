@@ -1,5 +1,11 @@
-import Renderer from "../graphics/Renderer";
+import Renderer from "./Renderer";
 
+/* 
+  More Nitty-gritty code to load tiles from the dist/tiles folder into memory
+  I also wouldn't read this if I were you...
+
+  Probably the most poorly-written, lazy part of the entire demo
+*/
 export default class Tile {
   public static readonly WIDTH = 64;
   public static readonly HEIGHT = 64;

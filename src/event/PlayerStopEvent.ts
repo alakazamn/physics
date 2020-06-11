@@ -1,5 +1,5 @@
 import { PlayerEvent } from "./PlayerEvent";
-import { Player } from "../Engine";
+import { Player } from "../engine/Engine";
 
 export class PlayerStopEvent extends PlayerEvent {
 

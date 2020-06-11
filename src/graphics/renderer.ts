@@ -1,7 +1,17 @@
 import Tile from './Tile';
-import { Player, Chunk, BoundingBox} from '../Engine';
+import { Player, Chunk, BoundingBox} from '../engine/Engine';
 
 import * as _ from "lodash";
+
+/* 
+  Nitty-gritty drawing code
+  I wouldn't read this if I were you...
+  it's gross and math-based to an irritating degree... 
+  
+  Took many hours of troubleshooting and tweaking
+  to the point where it takes me a long time to understand it 
+  when I re-read, and I wrote it... 
+*/
 
 export default class Renderer {
   public static ZOOM : number = 1;
@@ -136,8 +146,83 @@ export default class Renderer {
     }
 
     this.canvas.getContext("2d").drawImage(new Tile(frame).player(), ((x*Renderer.ZOOM)-(Player.WIDTH*Renderer.ZOOM/2)-cam.getX()), ((y*Renderer.ZOOM)-(Player.HEIGHT*Renderer.ZOOM/2)-cam.getY()), Player.WIDTH*Renderer.ZOOM, Player.HEIGHT*Renderer.ZOOM);
+    
+    if(this.debugOn) {
+      let ctx = this.canvas.getContext("2d");
+      player.getForces().forEach((force) => {
+        let smallerForce = force.div(Renderer.ZOOM*3);
+        ctx.beginPath();
+        ctx.moveTo(((x*Renderer.ZOOM)-cam.getX()), ((y*Renderer.ZOOM)-cam.getY()));
+        ctx.lineTo(((x*Renderer.ZOOM)-cam.getX())+smallerForce.getX(), ((y*Renderer.ZOOM)-cam.getY())+smallerForce.getY());
+        ctx.stroke();
 
+        this.drawArrowhead(ctx, 
+          {
+            x: (x*Renderer.ZOOM)-cam.getX(), 
+            y: (y*Renderer.ZOOM)-cam.getY()
+          },
+          {
+            x: (x*Renderer.ZOOM)-cam.getX()+smallerForce.getX(), 
+            y: (y*Renderer.ZOOM)-cam.getY()+smallerForce.getY() 
+          }, 10)
+
+      })
+    } else {
+      var ctx = this.canvas.getContext("2d");
+      ctx.font = '15px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif'
+      ctx.fillText("Press F3 to see free body diagrams", this.canvas.width - 300, this.canvas.height - 30);
+    }
   }
+
+
+
+ /**
+   * Draw an arrowhead on a line on an HTML5 canvas.
+   *
+   * Based almost entirely off of http://stackoverflow.com/a/36805543/281460 with some modifications
+   * for readability and ease of use.
+   *
+   * @param context The drawing context on which to put the arrowhead.
+   * @param from A point, specified as an object with 'x' and 'y' properties, where the arrow starts
+   *             (not the arrowhead, the arrow itself).
+   * @param to   A point, specified as an object with 'x' and 'y' properties, where the arrow ends
+   *             (not the arrowhead, the arrow itself).
+   * @param radius The radius of the arrowhead. This controls how "thick" the arrowhead looks.
+   */
+  //Took this from here:
+  drawArrowhead = (context, from, to, radius) => {
+    var x_center = to.x;
+    var y_center = to.y;
+
+    var angle;
+    var x;
+    var y;
+
+    context.beginPath();
+
+    angle = Math.atan2(to.y - from.y, to.x - from.x)
+    x = radius * Math.cos(angle) + x_center;
+    y = radius * Math.sin(angle) + y_center;
+
+    context.moveTo(x, y);
+
+    angle += (1.0/3.0) * (2 * Math.PI)
+    x = radius * Math.cos(angle) + x_center;
+    y = radius * Math.sin(angle) + y_center;
+
+    context.lineTo(x, y);
+
+    angle += (1.0/3.0) * (2 * Math.PI)
+    x = radius *Math.cos(angle) + x_center;
+    y = radius *Math.sin(angle) + y_center;
+
+    context.lineTo(x, y);
+
+    context.closePath();
+
+    context.fill();
+  }
+
   public onScreen = (x : number, y: number, width: number, height: number, zoom : number, camera: BoundingBox) : Boolean => {
     return (zoom*x*width)>(camera.getX()-(width*zoom)) && (zoom*x*width)<=(camera.getX()+camera.width) && (zoom*y*height)>(camera.getY()-(height*zoom)) && (zoom*y*height)<=(camera.getY()+camera.height);
   }
@@ -145,14 +230,9 @@ export default class Renderer {
     return this.onScreen(x,y,Tile.WIDTH, Tile.HEIGHT, zoom, camera);
   }
 
-  public toggleFullScreen = () => {
-    if (!document.fullscreenElement) {
-       document.documentElement.requestFullscreen();
-   } else {
-     if (document.exitFullscreen) {
-       document.exitFullscreen();
-     }
-   }
+  private debugOn = false;
+  public toggleDebug = () => {
+    this.debugOn = !this.debugOn;
   }
   /*
   * Stuff to do when window is closing

@@ -1,5 +1,5 @@
 import { GameEvent } from "./Event";
-import { Player } from "../Engine";
+import { Player } from "../engine/Engine";
 
 export class PlayerEvent extends GameEvent {
 

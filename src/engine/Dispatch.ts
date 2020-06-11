@@ -2,6 +2,11 @@ import { GameEvent } from "../event/Event";
 
 import * as uuidv4 from "uuid/v4";
 
+/* 
+  This game operates on an event-based system, where each action triggers an event, which calls more code
+  This file handles receiving events and triggering the relevant code
+*/
+
 export default class Dispatch {
   //modifiable
 

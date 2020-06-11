@@ -1,4 +1,4 @@
-import { Chunk } from "../Engine";
+import { Chunk } from "../engine/Engine";
 import { GameEvent } from "./Event";
 
 export class ChunkGenerateEvent extends GameEvent {

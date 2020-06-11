@@ -1,4 +1,9 @@
-import { SurfaceType } from '../Engine'
+import { SurfaceType } from './Engine'
+
+/*
+  Represents a surface, with a coefficient of kinetic friction
+  In this world, there's no static friction because it just seemed unnecessary
+*/
 
 export class Surface {
   public constructor(private id : number) {

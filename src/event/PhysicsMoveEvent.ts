@@ -1,9 +1,9 @@
 import { GameEvent } from "./Event";
-import { PhysicalObject, GameLocation } from "../Engine";
+import { PhysicalObject, Vector } from "../engine/Engine";
 
 export class PhysicsMoveEvent extends GameEvent {
 
-  constructor(private body : PhysicalObject, private from : GameLocation, private to : GameLocation)	 {
+  constructor(private body : PhysicalObject, private from : Vector, private to : Vector)	 {
     super();
   }
   getEventName = ​() : string => {
@@ -12,10 +12,10 @@ export class PhysicsMoveEvent extends GameEvent {
   getBody = ​() : PhysicalObject => {
     return this.body;
   }
-  getFrom = ​() : GameLocation => {
+  getFrom = ​() : Vector => {
     return this.from;
   }
-  getTo = ​() : GameLocation => {
+  getTo = ​() : Vector => {
     return this.to;
   }
 }

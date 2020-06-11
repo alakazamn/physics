@@ -1,9 +1,14 @@
-import { GameLocation } from "../Engine";
+import { Vector } from "./Engine";
+
+
+/*
+    Represents a rectangle with position and two dimensions.
+*/
 
 export class BoundingBox {
-  private loc : GameLocation;
+  private loc : Vector;
   public constructor(x : number, y: number, public width: number, public height: number) {
-    this.loc = new GameLocation(x,y,0,0);
+    this.loc = new Vector(x,y);
   }
   getX = () : number => {
     return this.loc.getX();
@@ -12,7 +17,7 @@ export class BoundingBox {
     return this.loc.getY();
   }
 
-  setLocation = (location : GameLocation) => {
+  setLocation = (location : Vector) => {
     this.loc = location;
   }
   getLocation = () => {
@@ -24,6 +29,4 @@ export class BoundingBox {
   centerY = () : number => {
     return (this.height/2) + this.getY();
   }
-
-  //modifying methods return a new chunk, to be loaded and put onto the server
 }

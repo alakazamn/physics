@@ -1,24 +1,26 @@
 import Renderer from "../graphics/Renderer";
-import Dispatch from "./dispatch";
-import PhysicsHandler from "./physics";
+import Dispatch from "./Dispatch";
+import Physics from "./Physics";
+import AudioManager from "./Audio"
 
-import { InputType } from "./input";
-import Input from "./input";
+import { InputType } from "../input/Input";
+import Input from "../input/Input";
 
-import { Player, Chunk } from "../Engine";
+import { Player, Chunk } from "./Engine";
+
+/* 
+  This file sets up / coordinates all the other processes (i.e. graphics, keyboard input, physics engine)
+*/
 
 import { 
-  EventResult,
-  EntityMoveEvent, 
   PlayerJumpEvent,
-  PlayerMoveEvent, 
   PlayerStopEvent, 
   GameInputDownEvent,
-  ChunkEvent, 
   ChunkGenerateEvent,
   TickEvent
- } from "../Events";
-import { Force } from "../engine/Force";
+ } from "../event/Events";
+
+import { Force } from "./Force";
 
 export default class Core {
   private static instance : Core;
@@ -29,13 +31,9 @@ export default class Core {
   private nextChunk : Chunk;
 
   private constructor() {
-    Dispatch.addEventListener("EntityMoveEvent",this.onEntityMove);
-    Dispatch.addEventListener("PlayerMoveEvent",this.onPlayerMove); 
     Dispatch.addEventListener("PlayerStopEvent",this.onPlayerStop);
     Dispatch.addEventListener("GameInputDownEvent",this.onInputDown);
-    Dispatch.addEventListener("ChunkEvent",this.onChunk);
     Dispatch.addEventListener("ChunkGenerateEvent",this.generateChunk);
-
   }
 
   public static getInstance() : Core {
@@ -48,18 +46,13 @@ export default class Core {
   /*
   * Stuff to do when game loads
   */
-  preload = () => {
-    PhysicsHandler.getInstance().load();
-  }
-
-  /*
-  * Stuff to do when game loads
-  */
 
   load = () => {
     this.active = true;
     Dispatch.fire(new ChunkGenerateEvent());
     Renderer.getInstance().initialize();
+    Physics.getInstance();
+    AudioManager.getInstance();
     Input.getInstance().load();
     this.lastTime = performance.now()
     this.timer = performance.now();
@@ -123,31 +116,24 @@ export default class Core {
       Dispatch.fire(new PlayerStopEvent(p));
     }
   }
-  onEntityMove = (e : EntityMoveEvent) => {
-    this.chunk.getEntity(e.getEntityID()).setLocation(e.getTo());
-    this.chunk.getEntity(e.getEntityID()).setMoving(true);
-  }
-  onPlayerMove = (e : PlayerMoveEvent) => {
-    //allow or disallow
-  }
 
   onPlayerStop = (e : PlayerStopEvent) => {
     e.getPlayer().setMoving(false);
   }
   
   onInputDown = (e : GameInputDownEvent) => {
-    if(e.getInputType()===InputType.FULLSCREEN) {
-      Renderer.getInstance().toggleFullScreen();
+    if(e.getInputType()===InputType.DEBUG) {
+      Renderer.getInstance().toggleDebug();
+    } 
+    else if(e.getInputType()===InputType.AUDIO) {
+      AudioManager.getInstance().toggleMusic();
     }
   }
 
-  onChunk = (e : ChunkEvent) => {
-    this.chunk = e.getChunk();
-    console.log(this.chunk);
-  }
   currentChunk = () => {
     return this.chunk;
   }
+
   generateChunk = (e : ChunkGenerateEvent) => {
     var tiles : number[][] = [];
     var x = 0;

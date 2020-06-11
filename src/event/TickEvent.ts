@@ -1,5 +1,5 @@
 import { GameEvent } from "../event/Event";
-import { Chunk, Player } from "../Engine";
+import { Chunk, Player } from "../engine/Engine";
 
 export class TickEvent extends GameEvent {
   public static readonly TPS = 20.0

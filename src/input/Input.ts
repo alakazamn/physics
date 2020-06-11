@@ -1,7 +1,10 @@
-import Dispatch from "./dispatch";
-import Keyboard from "./keyboard";
-import { GameInputUpEvent, GameInputDownEvent } from "../Events";
+import Dispatch from "../engine/Dispatch";
+import Keyboard from "./Keyboard";
+import { GameInputUpEvent, GameInputDownEvent } from "../event/Events";
 
+/* 
+  This file handles the higher-level input information (converting keyboard signals into game events, as described in dispatch.ts)
+*/
 
 export default class Input {
   //modifiable
@@ -56,5 +59,6 @@ export enum InputType {
   DOWN,
   LEFT,
   RIGHT,
-  FULLSCREEN
+  AUDIO,
+  DEBUG
 }
