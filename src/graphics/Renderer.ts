@@ -51,7 +51,8 @@ export default class Renderer {
      this.canvas.width = window.innerWidth;
      this.renderLast();
    }, false);
-
+   if(document.cookie == "yes") 
+    this.debugOn = true;
   }
   renderLast = () => {
     this.renderChunk(this.lastChunk, this.lastPlayer);
@@ -286,6 +287,11 @@ export default class Renderer {
   private debugOn = false;
   public toggleDebug = () => {
     this.debugOn = !this.debugOn;
+    if(this.debugOn) {
+      document.cookie = "yes"
+    } else {
+      document.cookie = "no"
+    }
   }
   /*
   * Stuff to do when window is closing
