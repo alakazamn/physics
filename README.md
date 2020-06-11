@@ -31,6 +31,9 @@ Basically everything is written from the ground up. This was terrible to write a
 ## Attribution
 Code that is borrowed is noted in comments. Audio files are borrowed from: https://github.com/hawkthorne/hawkthorne-journey and licensed under CC BY-NC 3.0. Includes all .ogg, and .wav files. Textures are from: https://jesse-m.itch.io/jungle-pack
 
+## Assorted Notes
+This used to have very, very basic multiplayer and some other bells and whistles, but I removed them since they weren't useful for this project. This started as a 2D RPG engine with no physics; I basically took my tile rendering code from a few months ago, rewrote almost all of it, and used it to render a physics simulation.
+
 ## How to run locally
 1. Download / Install npm and node.js from here: https://nodejs.org/en/download/
 
@@ -41,4 +44,3 @@ Code that is borrowed is noted in comments. Audio files are borrowed from: https
 4. Type `npm install` and press enter to install dependencies, then type `npm start` and press enter to run the game.
 
 5. Go to http://localhost:5000 to try out the game.
-
