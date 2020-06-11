@@ -43,9 +43,13 @@ export default class Physics {
       e.tick();
     })
   }
+
+  /*
+    Makes the player jump
+  */
   onPlayerJump = (e : PlayerJumpEvent) => {
     let chunk = Core.getInstance().currentChunk(); 
-    if(this.checkCollision(e.getPlayer().getX(), e.getPlayer().getY()+1,chunk)) {
+    if(this.checkCollision(e.getPlayer().getX(), e.getPlayer().getY()+1,chunk)) { //only allow if on ground
        //unrealistic, but otherwise the game is unplayable...
        //the player needs to be able to jump at least 1m, which
        //in real life is impossible...
@@ -56,6 +60,9 @@ export default class Physics {
     }
   }
 
+  /*
+    Check if the player is touching a block
+  */
   checkCollision(x : number, y: number, chunk : Chunk) : boolean {
     let topX = Math.floor(x/Tile.WIDTH);
     let topY = Math.floor(y/Tile.HEIGHT);
@@ -77,23 +84,23 @@ export default class Physics {
       aY < bY + bH &&
       aY + aH > bY)
   }
+
+  /*
+    Called when the velocity of an object causes that object to move
+  */
   onPhysicsMove = (e : PhysicsMoveEvent) => {
     let chunk = Core.getInstance().currentChunk(); 
 
+    /*
+      This gets a little complicated, but to check for collisions at discrete time intervals, 
+      the system has to check for collisions retroactively, so that we don't miss a collision because
+      we're only sampling every 1/20th of a second
+
+      Thus, we basically step one pixel at a time in each direction, checking if there's a collision.
+    */
+    
     let xDT = e.getTo().getX() - e.getFrom().getX();
     let yDT = e.getTo().getY() - e.getFrom().getY();
-
-    e.getBody().applyForce(new Force(xDT < 0 ? 0 : Math.PI, Physics.AIR_RESISTANCE/2*Math.pow(e.getBody().getVelocity().getX(),2), true)) //air resistance
-
-    if(xDT != 0) {
-      if(this.checkCollision(e.getBody().getX(), e.getBody().getY()+1,chunk)) { //apply friction
-        let bottomX = Math.ceil((e.getBody().getX() + e.getBody().getWidth())/Tile.WIDTH);
-        let bottomY = Math.ceil((e.getBody().getY() +  e.getBody().getHeight()+1)/Tile.HEIGHT)-1;
-        let friction = new Surface(chunk.tiles[bottomX][bottomY]).getFriction();
-        let fF = Math.abs(e.getBody().normalForce().getMagnitude() * friction);
-        e.getBody().applyForce(new Force(xDT < 0 ? 0 : Math.PI, fF, true))
-      }
-    }
 
     //Collision handling for the player and the ground
     let steps = Math.ceil(Math.max(Math.abs(xDT), Math.abs(yDT)))
@@ -133,6 +140,22 @@ export default class Physics {
       x+= xDT / steps;
       y+= yDT / steps;
     }
+
+    //Apply air resistance in the x direction (I took the air resistance constant and divided it by two, otherwise it was too extreme)
+    if(x - e.getFrom().getX() != 0) {
+      e.getBody().applyForce(new Force(xDT < 0 ? 0 : Math.PI, Physics.AIR_RESISTANCE/2*Math.pow(e.getBody().getVelocity().getX(),2), true))
+
+      //apply friction
+      if(this.checkCollision(e.getBody().getX(), e.getBody().getY()+1,chunk) && Math.abs(e.getBody().getVelocity().getX()) > 0) {
+        let bottomX = Math.ceil((e.getBody().getX() + e.getBody().getWidth())/Tile.WIDTH);
+        let bottomY = Math.ceil((e.getBody().getY() +  e.getBody().getHeight()+1)/Tile.HEIGHT)-1;
+        let friction = new Surface(chunk.tiles[bottomX][bottomY]).getFriction();
+        let fF = Math.abs(e.getBody().normalForce().getMagnitude() * friction);
+        e.getBody().applyForce(new Force(xDT < 0 ? 0 : Math.PI, fF, true))
+      }
+    }
+
+    //Apply air resistance in the y direction 
     if(y - e.getFrom().getY() != 0) {
         e.getBody().applyForce(new Force(y - e.getFrom().getY() > 0 ? Math.PI / 2 : 3 * Math.PI / 2, Physics.AIR_RESISTANCE*Math.pow(e.getBody().getVelocity().getY(),2), true))
     }

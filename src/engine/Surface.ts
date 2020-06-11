@@ -19,7 +19,7 @@ export class Surface {
   }
 
   private readonly friction = {
-    [SurfaceType.ICE] : 0.0005,
+    [SurfaceType.ICE] : 0.035,
     [SurfaceType.OTHER] : 0.1,
   }
 }

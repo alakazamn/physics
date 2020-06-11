@@ -43,6 +43,12 @@ export class Vector  {
     }
 
     /*
+        Round X to the nearest 10th.
+    */
+    public roundX = () : Vector => {
+        return new Vector(Math.round(this.x*10)/10,this.y);
+    }
+    /*
         Get the Y component of the Vector.
     */
     public getY() {

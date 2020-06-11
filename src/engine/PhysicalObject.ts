@@ -143,7 +143,7 @@ export class PhysicalObject extends BoundingBox {
         this.acceleration = netForce.div(this.mass).mult(Player.HEIGHT / Player.METRIC_HEIGHT).div(TickEvent.TPS * 10)
         
         //accumulate velocity
-        this.velocity = this.velocity.plusVec(this.acceleration);
+        this.velocity = this.velocity.plusVec(this.acceleration).roundX();
 
         //if the object has velocity from inertia, we should check that 
         //moving the object won't create collisions, and apply velocity-dependent / frictive forces:
