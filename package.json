@@ -3,9 +3,12 @@
   "version": "1.0.0",
   "description": "",
   "target": "node",
+  "engines": {
+    "node": "10.16.3"
+  },
   "scripts": {
     "build": "webpack",
-    "start": "npm run build && serve ./dist"
+    "start": "serve ./dist"
   },
   "author": "",
   "license": "ISC",
