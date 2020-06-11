@@ -5,7 +5,19 @@ Visit online at: https://physics-demo.herokuapp.com/ (easiest).
 
 ## Code Layout
 
-The main physics calculations are done in: [engine/Physics.ts](src/engine/Physics.ts), [engine/Force.ts](src/engine/Force.ts),  [engine/PhysicalObject.ts](src/engine/PhysicalObject.ts), and [engine/Vector.ts](src/engine/Vector.ts)
+The main physics calculations are done in: [engine/Physics.ts](src/engine/Physics.ts), [engine/Force.ts](src/engine/Force.ts),  [engine/PhysicalObject.ts](src/engine/PhysicalObject.ts, and [engine/Vector.ts](src/engine/Vector.ts)
+
+## Features
+* Gravity, Friction, and Air Resistance
+* Full force-based physics with free-body diagrams 
+* Poorly written auto-generated random terrain
+* Animated sprites and parallax backgrounds + Death animations
+* Annoying toggleable chiptune music and non-negotiable sound effects
+* Event-based game programming
+
+
+Basically everything is written from the ground up. This was terrible to write and I regret all of it.
+
 
 ## Controls
 * [W] = [Jump]
