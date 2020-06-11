@@ -2,14 +2,15 @@
 ### Written for AP Physics
 
 ## How to run
+1. Download / Install npm and node.js from here: https://nodejs.org/en/download/
 
-To download: press [WIN + R] and type `cmd`, then press enter
+2. Press [WIN + R] and type `cmd`, then press enter
 
-Type `git clone https://github.com/themichaelcaruso/physics`, then press enter
+3. Type `git clone https://github.com/themichaelcaruso/physics`, then press enter
 
-Type `npm install` and press enter to install dependencies, then type `npm start` and press enter to run the game.
+4. Type `npm install` and press enter to install dependencies, then type `npm start` and press enter to run the game.
 
-Go to http://localhost:5000 to try out the game.
+5. Go to http://localhost:5000 to try out the game.
 
 ## Relevant Code
 
