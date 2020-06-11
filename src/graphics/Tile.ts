@@ -25,7 +25,7 @@ export default class Tile {
       })
     }
     
-    for(var i = 0; i<8; i++) {
+    for(var i = 0; i<20; i++) {
       const g = i;
       promises[i] = Tile.loadTexture("c-"+i.toString()).then((imageData) => {
         createImageBitmap(imageData).then(renderer => { Tile.playerTextures[g] = renderer; })
@@ -67,14 +67,10 @@ export default class Tile {
     return null;
   }
   player = () : ImageBitmap => {
-    if(this.id <=Tile.TILES)
       return Tile.playerTextures[this.id];
-    return null;
   }
   bg = () : ImageBitmap => {
-    if(this.id <=Tile.TILES)
       return Tile.bgTextures[this.id];
-    return null;
   }
   //https://stackoverflow.com/questions/17591148/converting-data-uri-to-image-data
  private static convertURIToImageData = (URI: string) : Promise<ImageData> => {

@@ -160,6 +160,10 @@ export default class Physics {
         e.getBody().applyForce(new Force(y - e.getFrom().getY() > 0 ? Math.PI / 2 : 3 * Math.PI / 2, Physics.AIR_RESISTANCE*Math.pow(e.getBody().getVelocity().getY(),2), true))
     }
     e.getBody().setLocation(new Vector(x, y));
+
+    if(y > Chunk.HEIGHT  * Tile.HEIGHT) {
+      console.log("start over")
+    }
     return;
   }
 

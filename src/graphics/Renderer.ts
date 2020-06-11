@@ -104,13 +104,13 @@ export default class Renderer {
     
    
     for(var bg = 0; bg<5; bg++) {
-      let camX = (cam.getX() * bg * 0.1);
+      let camX = (cam.getX() * bg * 0.2);
       let startX = Math.floor(camX / (2500));
       let endX = Math.ceil((camX+cameraWidth) / (2500));
       for(var i = startX; i<endX; i++) {  
         if(i < 0) i = 0;
         let img = new Tile(bg).bg();
-        const relPosX = i*img.width-camX - (camX * bg * 0.1);
+        const relPosX = i*img.width-camX;
         let relPosY = (-100-cam.getY());
         this.canvas.getContext("2d").drawImage(img, relPosX, relPosY);
       }
@@ -157,14 +157,18 @@ export default class Renderer {
     }
 
   //render the player
-    var frame = 0;
+    var frame;
     if(player.getJumping()) {
-      frame = 4;
+      frame = 19;
     }
     else if(player.getMoving()) {
-      frame = Math.ceil(Math.random()*2);
+      player.setFrameLimit(7);
+      frame = player.frame() + 10;
+    } 
+    else {
+      player.setFrameLimit(10);
+      frame = player.frame()
     }
-
     this.canvas.getContext("2d").drawImage(new Tile(frame).player(), ((x*Renderer.ZOOM)-(Player.WIDTH*Renderer.ZOOM/2)-cam.getX()), ((y*Renderer.ZOOM)-(Player.HEIGHT*Renderer.ZOOM/2)-cam.getY()), Player.WIDTH*Renderer.ZOOM, Player.HEIGHT*Renderer.ZOOM);
     
     if(this.debugOn) {
