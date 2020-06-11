@@ -101,23 +101,19 @@ export default class Renderer {
     this.canvas.getContext("2d").clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     var cam = new BoundingBox(cameraX-(cameraWidth/2), cameraY-(cameraHeight/2), cameraWidth, cameraHeight);
-
-    let startX = Math.floor(cam.getX() / (1024));
-    let endX = Math.ceil((cam.getX()+cameraWidth) / (1024));
-    for(var i = startX; i<endX; i++) {  
-      if(i < 0) i = 0;
-      let bg = 0;
-      if(c.biomes[i] == 0 || c.biomes[i] == 5 || c.biomes[i] == 3 || c.biomes[i] == 4) { //grass or liquid
-        bg = 0;
-      } else if(c.biomes[i] == 1 || c.biomes[i] == 6) { //sand
-        bg = 3;
-      } else if(c.biomes[i] == 2 || c.biomes[i] == 7) { //ice
-        bg = 2;
+    
+   
+    for(var bg = 0; bg<5; bg++) {
+      let camX = (cam.getX() * bg * 0.1);
+      let startX = Math.floor(camX / (2500));
+      let endX = Math.ceil((camX+cameraWidth) / (2500));
+      for(var i = startX; i<endX; i++) {  
+        if(i < 0) i = 0;
+        let img = new Tile(bg).bg();
+        const relPosX = i*img.width-camX - (camX * bg * 0.1);
+        let relPosY = (-100-cam.getY());
+        this.canvas.getContext("2d").drawImage(img, relPosX, relPosY);
       }
-      let img = new Tile(bg).bg();
-      const relPosX = i*img.width-cam.getX();
-      let relPosY = (-100-cam.getY());
-      this.canvas.getContext("2d").drawImage(img, relPosX, relPosY);
     }
     for(var yy = Math.floor(cam.getY() / (Tile.HEIGHT * Renderer.ZOOM))-1; yy-2<Math.ceil((cam.getY()+cameraHeight) / (Tile.HEIGHT * Renderer.ZOOM)); yy++) {
       for(var xx = Math.floor(cam.getX() / (Tile.WIDTH * Renderer.ZOOM)); xx<Math.ceil((cam.getX()+cameraWidth) / (Tile.WIDTH * Renderer.ZOOM)); xx++) {
@@ -126,8 +122,32 @@ export default class Renderer {
         if(yy>=c.tiles[xx].length) continue;
           const relPosX = ((xx*Tile.WIDTH*Renderer.ZOOM)-cam.getX());
           let relPosY = ((yy*Tile.HEIGHT*Renderer.ZOOM)-cam.getY());
-          if(c.tiles[xx][yy] != -1) {
-            const img = new Tile(c.tiles[xx][yy]).image();
+
+          if(!c.tiles[xx][yy]) continue;
+          var tile = -1;
+          if(!this.hasLeft(c, xx, yy) && this.hasRight(c,xx,yy) && !this.hasTop(c,xx,yy) && this.hasBottom(c,xx,yy)) {
+            tile = 0;
+          } 
+          else if(this.hasLeft(c, xx, yy) && this.hasRight(c,xx,yy) && !this.hasTop(c,xx,yy) && this.hasBottom(c,xx,yy)) {
+            tile = 1;
+          } 
+          else if(this.hasLeft(c, xx, yy) && !this.hasRight(c,xx,yy) && !this.hasTop(c,xx,yy) && this.hasBottom(c,xx,yy)) {
+            tile = 2;
+          }  
+          else if(!this.hasLeft(c, xx, yy) && this.hasRight(c,xx,yy) && this.hasTop(c,xx,yy) && this.hasBottom(c,xx,yy)) {
+            tile = 3;
+          }
+          else if(this.hasLeft(c, xx, yy) && !this.hasRight(c,xx,yy) && this.hasTop(c,xx,yy) && this.hasBottom(c,xx,yy)) {
+            tile = 4;
+          } else if(this.hasLeft(c, xx, yy) && this.hasRight(c,xx,yy) && this.hasTop(c,xx,yy) && this.hasBottom(c,xx,yy) && !this.hasTopRightCorner(c,xx,yy)) {
+            tile = 6;
+          } else if(this.hasLeft(c, xx, yy) && this.hasRight(c,xx,yy) && this.hasTop(c,xx,yy) && this.hasBottom(c,xx,yy) && !this.hasTopLeftCorner(c,xx,yy)) {
+            tile = 7;
+          } else {
+            tile = 5;
+          }
+          if(tile != -1) {
+            const img = new Tile(tile).image();
             if(img.height > Tile.HEIGHT) {
               relPosY -= ((img.height / (Tile.HEIGHT*Renderer.ZOOM))-1)*Tile.HEIGHT*Renderer.ZOOM;
             }
@@ -149,6 +169,7 @@ export default class Renderer {
     
     if(this.debugOn) {
       let ctx = this.canvas.getContext("2d");
+      ctx.fillStyle = "#000";
       player.getForces().forEach((force) => {
         let smallerForce = force.div(Renderer.ZOOM*3);
         ctx.beginPath();
@@ -169,13 +190,33 @@ export default class Renderer {
       })
     } else {
       var ctx = this.canvas.getContext("2d");
+      ctx.fillStyle = "#FFF";
       ctx.font = '15px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif'
       ctx.fillText("Press F3 to see free body diagrams", this.canvas.width - 300, this.canvas.height - 30);
+      ctx.fillStyle = "#000";
     }
   }
 
 
-
+  hasLeft(c : Chunk, x : number, y: number) {
+    return (c.tiles[x-1] && c.tiles[x-1][y]) || x-1 < 0;
+  }
+  hasRight(c : Chunk, x : number, y: number) {
+    return (c.tiles[x+1] && c.tiles[x+1][y]) || x+1 > c.tiles.length;
+  }
+  hasTop(c : Chunk, x : number, y: number) {
+    return c.tiles[x][y-1]|| y-1 < 0;
+  }
+  hasBottom(c : Chunk, x : number, y: number) {
+    return c.tiles[x][y+1] || y+1 >= c.tiles[x].length;
+  }
+  hasTopRightCorner(c : Chunk, x : number, y: number) {
+    return c.tiles[x+1][y-1];
+  }
+  hasTopLeftCorner(c : Chunk, x : number, y: number) {
+    if(x-1 < 0 || y-1 < 0) return true;
+    return c.tiles[x-1][y-1];
+  }
  /**
    * Draw an arrowhead on a line on an HTML5 canvas.
    *

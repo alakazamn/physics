@@ -70,7 +70,7 @@ export default class Physics {
     let bottomY = Math.ceil((y + Player.HEIGHT)/Tile.HEIGHT);
     for(var xx = topX; xx < bottomX; xx++) {
       for(var yy = topY; yy < bottomY; yy++) {
-         if(chunk.tiles[xx][yy] != -1 && this.collide(x,y,Player.WIDTH, Player.HEIGHT, xx*Tile.WIDTH, yy*Tile.HEIGHT, Tile.WIDTH, Tile.HEIGHT)) return true;
+         if(chunk.tiles[xx][yy] && this.collide(x,y,Player.WIDTH, Player.HEIGHT, xx*Tile.WIDTH, yy*Tile.HEIGHT, Tile.WIDTH, Tile.HEIGHT)) return true;
       }
     }
     return false
@@ -149,7 +149,7 @@ export default class Physics {
       if(this.checkCollision(e.getBody().getX(), e.getBody().getY()+1,chunk) && Math.abs(e.getBody().getVelocity().getX()) > 0) {
         let bottomX = Math.ceil((e.getBody().getX() + e.getBody().getWidth())/Tile.WIDTH);
         let bottomY = Math.ceil((e.getBody().getY() +  e.getBody().getHeight()+1)/Tile.HEIGHT)-1;
-        let friction = new Surface(chunk.tiles[bottomX][bottomY]).getFriction();
+        let friction = new Surface(0).getFriction(); //whatever
         let fF = Math.abs(e.getBody().normalForce().getMagnitude() * friction);
         e.getBody().applyForce(new Force(xDT < 0 ? 0 : Math.PI, fF, true))
       }

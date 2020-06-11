@@ -8,7 +8,8 @@
   },
   "scripts": {
     "build": "webpack",
-    "start": "serve ./dist"
+    "start": "serve ./dist",
+    "test" : "npm run build && serve ./dist"
   },
   "author": "",
   "license": "ISC",

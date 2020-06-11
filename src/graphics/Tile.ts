@@ -9,7 +9,7 @@ import Renderer from "./Renderer";
 export default class Tile {
   public static readonly WIDTH = 64;
   public static readonly HEIGHT = 64;
-  public static readonly TILES = 12;
+  public static readonly TILES = 8;
   private static readonly textures : ImageBitmap[] = [];
   private static readonly playerTextures : ImageBitmap[] = [];
   private static readonly bgTextures : ImageBitmap[] = [];
@@ -32,7 +32,7 @@ export default class Tile {
       })
     }
 
-    for(var i = 0; i<4; i++) {
+    for(var i = 0; i<5; i++) {
       const g = i;
       promises[i] = Tile.loadTexture("bg-"+i.toString()).then((imageData) => {
         createImageBitmap(imageData).then(renderer => { Tile.bgTextures[g] = renderer; })

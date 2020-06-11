@@ -9,7 +9,7 @@ export class Chunk {
   public static readonly WIDTH = 600;
   public static readonly HEIGHT = 15;
 
-  public constructor(readonly tiles : number[][], private objects: PhysicalObject[], readonly biomes : number[]) {
+  public constructor(readonly tiles : boolean[][], private objects: PhysicalObject[], public readonly startY) {
 
   }
   public getObjects = () : PhysicalObject[] => {

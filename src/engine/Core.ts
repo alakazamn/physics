@@ -21,6 +21,7 @@ import {
  } from "../event/Events";
 
 import { Force } from "./Force";
+import Tile from "../graphics/Tile";
 
 export default class Core {
   private static instance : Core;
@@ -135,63 +136,44 @@ export default class Core {
   }
 
   generateChunk = (e : ChunkGenerateEvent) => {
-    var tiles : number[][] = [];
+    var tiles : boolean[][] = [];
     var x = 0;
-    var biomes = [];
+    let lastHeight = -1;
+    let startY = -1;
     while(x<Chunk.WIDTH) {
-  
-      let biome = Math.floor(Math.random() * 8);
-      if(
-        ((biome == 1 || biome == 6) && (biomes[biomes.length-1] == 2 || biomes[biomes.length-1] == 7)) ||
-         ((biome == 2 || biome == 7) && (biomes[biomes.length-1] == 1 || biomes[biomes.length-1] == 6)) ||
-         ((biome == 3 ) && (biomes[biomes.length-1] == 4)) ||
-         ((biome == 4) && (biomes[biomes.length-1] == 2 || biomes[biomes.length-1] == 7)) ||
-         ((biome == 2 || biome == 7) && (biomes[biomes.length-1] == 4))) {
-         continue;
-       }
-      biomes.push(biome);
-      if(biome != 3 && biome != 4)
-        biomes.push(biome); //TODO: FIX, wasting mem because lazy and who cares
+      let height = Chunk.HEIGHT - Math.floor(Math.random()*8);
+      let width = Math.min(Math.floor(Math.random()*4)+3, Chunk.WIDTH - x);
+      
+      if(lastHeight != -1 && height < lastHeight && lastHeight - height > 3) continue;
+      if(height <= Chunk.HEIGHT-1) 
+        width = Math.min(4, width)
+      lastHeight = height;
 
-      const biomeWidth = biome == 3 || biome == 4 ? 16 : 32;
-      let topBlock = biome;
-      let bottomBlock = -1;
-      let startingHeight = 10;
-  
-      if(biome == 3 || biome == 4) {
-        startingHeight+=1;
+      if(startY == -1) {
+        startY = height*Tile.HEIGHT - Player.HEIGHT-50;
       }
-  
-      if(biome >= 0 && biome < 3) {
-        bottomBlock = 8;
-      } else if(biome == 3) {
-        bottomBlock = 10;
-      } else if(biome == 4) {
-        bottomBlock = 11;
-      } else if(biome >= 5) {
-        bottomBlock = 9;
-      }
-  
-      for(var w = x; w<x+biomeWidth; w++) {
-        tiles[w] = [];
-        for(var y = 0; y<startingHeight; y++) {
-          tiles[w][y] = -1;
-        }
-        tiles[w][startingHeight] = topBlock;
-        for(var y = startingHeight+1; y<Chunk.HEIGHT; y++) {
-          tiles[w][y] = bottomBlock;
+      for(var xx = x; xx<x+width; xx++) {
+        tiles[xx] = []
+        for(var yy = 0; yy < Chunk.HEIGHT; yy++) {
+          if(yy < height) {
+            tiles[xx][yy] = false;
+          } else {
+            tiles[xx][yy] = true;
+          }
         }
       }
-      x += biomeWidth;
+      x+=width;
+
     }
+    console.log(startY);
     if(this.nextChunk) {
       this.chunk = this.nextChunk;
-      this.nextChunk = new Chunk(tiles, [], biomes);
+      this.nextChunk = new Chunk(tiles, [], startY);
     } else {
-      this.chunk = new Chunk(tiles, [], biomes);
+      this.chunk = new Chunk(tiles, [], startY);
     }
 
-    this.player = new Player(100,100);
+    this.player = new Player(100,this.chunk.startY);
   }
    /*
   * Stuff to do when window is closing
