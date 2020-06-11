@@ -1,13 +1,14 @@
 # Basic 2D Game Engine
-Written for AP Physics.
-Visit online at: https://physics-demo.herokuapp.com/ (easiest) or follow the instructions [below](#how-to-run) (complicated)
+Written for AP Physics. Press [W] to jump, and try not to run into anything or fall off the map.
+
+Visit online at: https://physics-demo.herokuapp.com/ (easiest).
 
 ## Code Layout
 
 The main physics calculations are done in: [engine/Physics.ts](src/engine/Physics.ts), [engine/Force.ts](src/engine/Force.ts),  [engine/PhysicalObject.ts](src/engine/PhysicalObject.ts), and [engine/Vector.ts](src/engine/Vector.ts)
 
 ## Controls
-* [WASD] = [Up, Left, Down Right]
+* [W] = [Jump]
 
 * [L] = Disable Music
 
@@ -18,7 +19,7 @@ The main physics calculations are done in: [engine/Physics.ts](src/engine/Physic
 ## Attribution
 Code that is borrowed is noted in comments. Audio files are borrowed from: https://github.com/hawkthorne/hawkthorne-journey and licensed under CC BY-NC 3.0. Includes all .ogg, and .wav files. Textures are from: https://jesse-m.itch.io/jungle-pack
 
-## How to run
+## How to run locally
 1. Download / Install npm and node.js from here: https://nodejs.org/en/download/
 
 2. Press [WIN + R] and type `cmd`, then press enter
