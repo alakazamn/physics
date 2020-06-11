@@ -32,7 +32,9 @@ Basically everything is written from the ground up. This was terrible to write a
 Code that is borrowed is noted in comments. Audio files are borrowed from: https://github.com/hawkthorne/hawkthorne-journey and licensed under CC BY-NC 3.0. Includes all .ogg, and .wav files. Textures are from: https://jesse-m.itch.io/jungle-pack
 
 ## Assorted Notes
-This used to have very, very basic multiplayer and some other bells and whistles, but I removed them since they weren't useful for this project. This started as a 2D RPG engine with no physics; I basically took my tile rendering code from a few months ago, rewrote almost all of it, and used it to render a physics simulation.
+This used to have very, very basic multiplayer and some other bells and whistles, but I removed them since they weren't useful for this project. This started as a 2D RPG engine with no physics; I basically took my tile rendering code from a few months ago, rewrote almost all of it, and used it to render a physics simulation. Originally, there were multiple surfaces with different coefficients of friction, but I couldn't find a good texture pack with ice and stuff like that so I just made one surface type for the demo; it's pretty trivial to change that though. This was written with the intent that one could write an entire real game on top, but for now it's really just a demonstration of some of the library functionality.
+
+I've written a cookie into the game so that if you turn on the free-body diagram option and refresh the page, it'll stay on. That should help in case you find yourself dying a lot in the game.
 
 ## How to run locally
 1. Download / Install npm and node.js from here: https://nodejs.org/en/download/
