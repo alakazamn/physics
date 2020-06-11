@@ -159,10 +159,10 @@ export default class Renderer {
   //render the player
     var frame;
     if(player.getJumping()) {
-      frame = 19;
+      frame = 20;
     }
     else if(player.getMoving()) {
-      player.setFrameLimit(7);
+      player.setFrameLimit(8);
       frame = player.frame() + 10;
     } 
     else {
@@ -195,6 +195,7 @@ export default class Renderer {
     } else {
       var ctx = this.canvas.getContext("2d");
       ctx.fillStyle = "#FFF";
+      ctx.textAlign = "left";
       ctx.font = '15px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif'
       ctx.fillText("Press F3 to see free body diagrams", this.canvas.width - 300, this.canvas.height - 30);
       ctx.fillStyle = "#000";
@@ -206,7 +207,7 @@ export default class Renderer {
     ctx.fillStyle = "#FFF";
     ctx.font = '50px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif'
     ctx.textAlign = "center";
-    ctx.fillText("You died", this.canvas.width/2, this.canvas.height/2);
+    ctx.fillText("You died.", this.canvas.width/2, this.canvas.height/2);
     ctx.fillStyle = "#000";
   }
   hasLeft(c : Chunk, x : number, y: number) {

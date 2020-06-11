@@ -25,7 +25,7 @@ export default class Tile {
       })
     }
     
-    for(var i = 0; i<20; i++) {
+    for(var i = 0; i<21; i++) {
       const g = i;
       promises[i] = Tile.loadTexture("c-"+i.toString()).then((imageData) => {
         createImageBitmap(imageData).then(renderer => { Tile.playerTextures[g] = renderer; })

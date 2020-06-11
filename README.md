@@ -16,7 +16,7 @@ The main physics calculations are done in: [engine/Physics.ts](src/engine/Physic
 * [F11] = Fullscreen
 
 ## Attribution
-Code that is borrowed is noted in comments. Audio files are borrowed from: https://github.com/hawkthorne/hawkthorne-journey and licensed under CC BY-NC 3.0. Includes all .ogg, and .wav files.
+Code that is borrowed is noted in comments. Audio files are borrowed from: https://github.com/hawkthorne/hawkthorne-journey and licensed under CC BY-NC 3.0. Includes all .ogg, and .wav files. Textures are from: https://jesse-m.itch.io/jungle-pack
 
 ## How to run
 1. Download / Install npm and node.js from here: https://nodejs.org/en/download/

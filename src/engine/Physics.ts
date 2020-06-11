@@ -1,7 +1,7 @@
 import Dispatch from "./Dispatch";
 
 import Core from "./Core";
-
+import { GameState } from "./Core"
 import { Player, Force, Surface } from "./Engine";
 import { EventResult, PlayerJumpEvent, PhysicsMoveEvent, PlayerDeathEvent } from "../event/Events";
 import Tile from "../graphics/Tile";
@@ -67,7 +67,7 @@ export default class Physics {
     let topX = Math.floor(x/Tile.WIDTH);
     let topY = Math.floor(y/Tile.HEIGHT);
     let bottomX = Math.ceil((x + Player.WIDTH)/Tile.WIDTH);
-    let bottomY = Math.ceil((y + Player.HEIGHT)/Tile.HEIGHT);
+    let bottomY = Math.ceil((y + Player.HEIGHT-7)/Tile.HEIGHT);
     for(var xx = topX; xx < bottomX; xx++) {
       for(var yy = topY; yy < bottomY; yy++) {
          if(chunk.tiles[xx][yy] && this.collide(x,y,Player.WIDTH, Player.HEIGHT, xx*Tile.WIDTH, yy*Tile.HEIGHT, Tile.WIDTH, Tile.HEIGHT)) return true;
@@ -89,6 +89,12 @@ export default class Physics {
     Called when the velocity of an object causes that object to move
   */
   onPhysicsMove = (e : PhysicsMoveEvent) => {
+
+    if(Core.getInstance().currentState() == GameState.DEATH) {
+      e.getBody().setLocation(new Vector(e.getFrom().getX(), e.getTo().getY()));
+      return;
+    }
+
     let chunk = Core.getInstance().currentChunk(); 
 
     /*
@@ -120,10 +126,14 @@ export default class Physics {
     for(var a = 0; a < steps; a++) {
       if(xDT != 0 && this.checkCollision(x + (xDT / steps),y,chunk)) {
         xDT = 0;
-        e.getBody().stopH();
+        e.getBody().clearForces();
+        e.getBody().applyImpulse(new Force(Math.PI/2, 1500),0.5);
+        Dispatch.fire(new PlayerDeathEvent(e.getBody() as Player));
+        //e.getBody().stopH();
         e.setResult(EventResult.DENY);
         if(e.getBody() instanceof Player) {
           (e.getBody() as Player).setMoving(false);
+          (e.getBody() as Player).setJumping(true);
         }
       }
       if(yDT !=0 && this.checkCollision(x,y + (yDT / steps),chunk)) {
@@ -162,7 +172,10 @@ export default class Physics {
     e.getBody().setLocation(new Vector(x, y));
 
     if(e.getBody() instanceof Player && y > Chunk.HEIGHT  * Tile.HEIGHT) {
+      e.getBody().clearForces();
+      e.getBody().applyImpulse(new Force(Math.PI/2, 1500),0.5);
       Dispatch.fire(new PlayerDeathEvent(e.getBody() as Player));
+      (e.getBody() as Player).setJumping(true);
     }
     return;
   }

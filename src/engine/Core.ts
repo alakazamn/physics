@@ -90,9 +90,7 @@ export default class Core {
 
     if(this.active)
       window.requestAnimationFrame(() => {
-        if(this.state == GameState.GAME) {
-          this.tick();
-        }
+         this.tick();
       });
   }
 
@@ -147,21 +145,26 @@ export default class Core {
   currentChunk = () => {
     return this.chunk;
   }
-
+  currentState = () => {
+    return this.state;
+  }
   generateChunk = (e : ChunkGenerateEvent) => {
     var tiles : boolean[][] = [];
     var x = 0;
     let lastHeight = -1;
     let startY = -1;
+    let buff = 10;
     while(x<Chunk.WIDTH) {
       let height = Chunk.HEIGHT - Math.floor(Math.random()*8);
-      let width = Math.min(Math.floor(Math.random()*4)+3, Chunk.WIDTH - x);
+      let width = startY == -1 ? 20 : Math.min(Math.floor(Math.random()*4)+3+buff, Chunk.WIDTH - x);
       if(lastHeight == -1 && height == 15) continue;
       if(lastHeight == 15 && height == 15) continue;
       if(lastHeight != -1 && height < lastHeight && lastHeight - height > 3) continue;
 
       if(height >= Chunk.HEIGHT) 
         width = Math.min(4, width)
+      else
+        buff--;
       lastHeight = height;
 
       if(startY == -1) {
@@ -178,6 +181,7 @@ export default class Core {
         }
       }
       x+=width;
+      if(buff<0) buff=0;
     }
     if(this.nextChunk) {
       this.chunk = this.nextChunk;
@@ -201,8 +205,9 @@ export default class Core {
   onDeath = () => {
     this.state = GameState.DEATH;
   }
+  
 }
 
-enum GameState {
+export enum GameState {
   LOGIN, GAME, DEATH
 }

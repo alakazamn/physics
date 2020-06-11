@@ -118,6 +118,15 @@ export class PhysicalObject extends BoundingBox {
     }
 
     /*
+        Clears all forces but gravity
+    */
+    clearForces() {
+        this.acceleration = new Vector(0,0);
+        this.velocity = new Vector(0,0)
+        this.forces = [new Force(3 * Math.PI / 2, Physics.GRAVITY * this.mass)]
+    }
+
+    /*
        Simulate 1/20th of a second of physics (or whatever amount is determined in event/TickEvent.ts)
     */
     tick() {
