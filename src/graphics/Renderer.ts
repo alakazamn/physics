@@ -163,8 +163,8 @@ export default class Renderer {
       frame = 20;
     }
     else if(player.getMoving()) {
-      player.setFrameLimit(8);
-      frame = player.frame() + 10;
+      player.setFrameLimit(7);
+      frame = player.frame() + 11;
     } 
     else {
       player.setFrameLimit(10);
