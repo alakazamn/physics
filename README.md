@@ -1,7 +1,7 @@
 # Basic 2D Game Engine
 Written for AP Physics. Press [W] to jump, and try not to run into anything or fall off the map. If you die, you'll have to refresh the page. I didn't really have time to finish the game mechanics (i.e. respawn, score, and infinite world generation)
 
-Visit online at: https://physics-demo.herokuapp.com/ (easiest).
+Visit online at: https://physics-game.onrender.com/ (easiest).
 
 ## Code Layout
 
