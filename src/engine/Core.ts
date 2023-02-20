@@ -109,7 +109,7 @@ export default class Core {
 
     this.input(delta)
 
-    p.applyForce(new Force(0, 400, true));
+    p.applyForce(new Force(0, 300, true));
     p.setMoving(true);
 
     Dispatch.fire(new TickEvent(delta, this.chunk, this.player));
