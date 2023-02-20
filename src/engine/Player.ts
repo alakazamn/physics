@@ -17,6 +17,7 @@ export class Player extends PhysicalObject {
   public static readonly METRIC_HEIGHT = 3;
   public static MASS = 62; //kg
   private internalFrameState = 0;
+  private jumps = 2;
 
   constructor(x:number, y:number, private moving = false, private jumping : boolean = false, private animationState = 0, private frameLimit = 0) {
     super(x,y,Player.WIDTH,Player.HEIGHT, Player.MASS);
@@ -51,4 +52,16 @@ export class Player extends PhysicalObject {
     }
     return this.animationState;
   }
-}
+  resetJumps = () => {
+    this.jumps = 2;
+  }
+  hasJumps = () => {
+    return this.jumps > 0
+  }
+  subJumps = () => {
+    if(this.jumps > 0) {
+      this.jumps--;
+    }
+  }
+
+}``

@@ -49,40 +49,17 @@ export default class Physics {
   */
   onPlayerJump = (e : PlayerJumpEvent) => {
     let chunk = Core.getInstance().currentChunk(); 
-    if(this.checkCollision(e.getPlayer().getX(), e.getPlayer().getY()+1,chunk)) { //only allow if on ground
+    if(Core.getInstance().checkCollision(e.getPlayer().getX(), e.getPlayer().getY()+1,chunk) 
+      || e.getPlayer().hasJumps()) { //only allow if on ground
        //unrealistic, but otherwise the game is unplayable...
        //the player needs to be able to jump at least 1m, which
        //in real life is impossible...
-      e.getPlayer().applyImpulse(new Force(Math.PI/2, 1500), 0.6);
+      e.getPlayer().applyImpulse(new Force(Math.PI/2, 1500), 0.8);
       e.getPlayer().setJumping(true);
+      e.getPlayer().subJumps();
     } else {
       e.setResult(EventResult.DENY)
     }
-  }
-
-  /*
-    Check if the player is touching a block
-  */
-  checkCollision(x : number, y: number, chunk : Chunk) : boolean {
-    let topX = Math.floor(x/Tile.WIDTH);
-    let topY = Math.floor(y/Tile.HEIGHT);
-    let bottomX = Math.ceil((x + Player.WIDTH)/Tile.WIDTH);
-    let bottomY = Math.ceil((y + Player.HEIGHT-7)/Tile.HEIGHT);
-    for(var xx = topX; xx < bottomX; xx++) {
-      for(var yy = topY; yy < bottomY; yy++) {
-         if(chunk.tiles[xx][yy] && this.collide(x,y,Player.WIDTH, Player.HEIGHT, xx*Tile.WIDTH, yy*Tile.HEIGHT, Tile.WIDTH, Tile.HEIGHT)) return true;
-      }
-    }
-    return false
-  }
-
-  //From Mozilla, because I'm lazy... 
-  // https://developer.mozilla.org/en-US/docs/Games/Techniques/2D_collision_detection
-  collide(aX : number, aY : number, aW: number, aH : number, bX : number, bY: number, bW: number, bH: number) {
-    return (aX < bX + bW &&
-     aX + aW > bX &&
-      aY < bY + bH &&
-      aY + aH > bY)
   }
 
   /*
@@ -132,7 +109,7 @@ export default class Physics {
     var x = e.getFrom().getX();
     var y = e.getFrom().getY();
     for(var a = 0; a < steps; a++) {
-      if(xDT != 0 && this.checkCollision(x + (xDT / steps),y,chunk)) {
+      if(xDT != 0 && Core.getInstance().checkCollision(x + (xDT / steps),y,chunk)) {
         xDT = 0;
         //If the player rams into a wall, mark them dead
         e.getBody().clearForces();
@@ -145,11 +122,12 @@ export default class Physics {
           (e.getBody() as Player).setJumping(true); //death animation
         }
       }
-      if(yDT !=0 && this.checkCollision(x,y + (yDT / steps),chunk)) {
+      if(yDT !=0 && Core.getInstance().checkCollision(x,y + (yDT / steps),chunk)) {
         yDT = 0;
         e.getBody().stopV();
         if(e.getBody() instanceof Player) {
           (e.getBody() as Player).setJumping(false);
+          (e.getBody() as Player).resetJumps();
         }
         e.setResult(EventResult.DENY);
       } 
@@ -165,7 +143,7 @@ export default class Physics {
       e.getBody().applyForce(new Force(xDT < 0 ? 0 : Math.PI, Physics.AIR_RESISTANCE/2*Math.pow(e.getBody().getVelocity().getX(),2), true))
 
       //apply friction
-      if(this.checkCollision(e.getBody().getX(), e.getBody().getY()+1,chunk) && Math.abs(e.getBody().getVelocity().getX()) > 0) {
+      if(Core.getInstance().checkCollision(e.getBody().getX(), e.getBody().getY()+1,chunk) && Math.abs(e.getBody().getVelocity().getX()) > 0) {
         let bottomX = Math.ceil((e.getBody().getX() + e.getBody().getWidth())/Tile.WIDTH);
         let bottomY = Math.ceil((e.getBody().getY() +  e.getBody().getHeight()+1)/Tile.HEIGHT)-1;
         let friction = new Surface(0).getFriction(); //whatever

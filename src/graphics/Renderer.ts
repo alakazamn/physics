@@ -1,5 +1,6 @@
 import Tile from './Tile';
 import { Player, Chunk, BoundingBox} from '../engine/Engine';
+import Core from "../Engine/Core";
 
 import * as _ from "lodash";
 
@@ -203,12 +204,14 @@ export default class Renderer {
     }
   }
 
-  drawDeath = () => {
+  drawDeath = (score : number) => {
     var ctx = this.canvas.getContext("2d");
     ctx.fillStyle = "#FFF";
     ctx.font = '50px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif'
     ctx.textAlign = "center";
     ctx.fillText("You died.", this.canvas.width/2, this.canvas.height/2);
+    ctx.font = '25px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif'
+    ctx.fillText("Score: " + score, this.canvas.width/2, this.canvas.height/2 + 50);
     ctx.fillStyle = "#000";
   }
   hasLeft(c : Chunk, x : number, y: number) {

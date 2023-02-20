@@ -31,6 +31,8 @@ export default class Core {
   private chunk : Chunk;
   private nextChunk : Chunk;
 
+  private score : number = 0
+
   private constructor() {
     Dispatch.addEventListener("PlayerStopEvent",this.onPlayerStop);
     Dispatch.addEventListener("GameInputDownEvent",this.onInputDown);
@@ -67,6 +69,8 @@ export default class Core {
  private timer : number;
  private state : GameState = GameState.LOGIN
 
+ private wasJumped = false
+
   //a tick = every 1/20th of a second
   tick = () => {
     var now = performance.now();
@@ -82,7 +86,7 @@ export default class Core {
         Renderer.getInstance().renderChunk(this.chunk, this.player);
     } else {
       Renderer.getInstance().renderChunk(this.chunk, this.player)
-      Renderer.getInstance().drawDeath();
+      Renderer.getInstance().drawDeath(Math.floor(this.score/100));
     }
 
     if(performance.now() - this.timer >= 1000) {
@@ -93,6 +97,10 @@ export default class Core {
       window.requestAnimationFrame(() => {
          this.tick();
       });
+  }
+
+  getScore = () => {
+    return this.score;
   }
 
   logic = (delta : number) => {
@@ -110,8 +118,12 @@ export default class Core {
     var p = this.player
     if(!p) return;
 
-    if(Input.getInstance().isDown(InputType.UP)) {
+    if(Input.getInstance().isDown(InputType.UP) && !this.wasJumped) {
       Dispatch.fire(new PlayerJumpEvent(p));
+      this.wasJumped = true
+    }
+    if(!Input.getInstance().isDown(InputType.UP) && this.wasJumped) {
+      this.wasJumped = false
     }
     if(p.getMoving() && !Input.getInstance().isDown(InputType.LEFT) && !Input.getInstance().isDown(InputType.RIGHT)) {
       Dispatch.fire(new PlayerStopEvent(p));
@@ -211,9 +223,34 @@ export default class Core {
   }
 
   onDeath = () => {
+    this.score = this.timer
     this.state = GameState.DEATH;
   }
   
+     /*
+    Check if the player is touching a block
+  */
+  public checkCollision(x : number, y: number, chunk : Chunk) : boolean {
+      let topX = Math.floor(x/Tile.WIDTH);
+      let topY = Math.floor(y/Tile.HEIGHT);
+      let bottomX = Math.ceil((x + Player.WIDTH)/Tile.WIDTH);
+      let bottomY = Math.ceil((y + Player.HEIGHT-7)/Tile.HEIGHT);
+      for(var xx = topX; xx < bottomX; xx++) {
+        for(var yy = topY; yy < bottomY; yy++) {
+           if(chunk.tiles[xx][yy] && this.collide(x,y,Player.WIDTH, Player.HEIGHT, xx*Tile.WIDTH, yy*Tile.HEIGHT, Tile.WIDTH, Tile.HEIGHT)) return true;
+        }
+      }
+      return false
+    }
+  
+    //From Mozilla, because I'm lazy... 
+    // https://developer.mozilla.org/en-US/docs/Games/Techniques/2D_collision_detection
+  public collide(aX : number, aY : number, aW: number, aH : number, bX : number, bY: number, bW: number, bH: number) {
+      return (aX < bX + bW &&
+       aX + aW > bX &&
+        aY < bY + bH &&
+        aY + aH > bY)
+    }
 }
 
 export enum GameState {
