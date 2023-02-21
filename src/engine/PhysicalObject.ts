@@ -129,7 +129,7 @@ export class PhysicalObject extends BoundingBox {
     /*
        Simulate 1/20th of a second of physics (or whatever amount is determined in event/TickEvent.ts)
     */
-    tick(ticks: number) {
+    tick() {
         this.forces = this.forces.filter(force => force.isApplied());
         var netForce = new Vector(0, 0);
         
@@ -138,19 +138,18 @@ export class PhysicalObject extends BoundingBox {
             if(force.isTemporary()) {
                 force.unapply();
             }
-            console.log(force.getDuration())
-            if(force.getDuration() != -100) {
-                if(force.getDuration() <= 0) {
+            if(force.getDuration() != -1) {
+                if(force.getDuration() == 0) {
                     force.unapply();
                 } else {
-                    force.tick(ticks);
+                    force.tick();
                 }
 
             }
         })
 
-        //the .div(TickEvent.TPS * 10) also scales down all physics by 2x, just because it looked ridiculous when I didn't
-        this.acceleration = netForce.div(this.mass).mult(Player.HEIGHT / Player.METRIC_HEIGHT).div(TickEvent.TPS * 2).mult(ticks)
+        //the .div(TickEvent.TPS * 10) also scales down all physics by 10x, just because it looked ridiculous when I didn't
+        this.acceleration = netForce.div(this.mass).mult(Player.HEIGHT / Player.METRIC_HEIGHT).div(TickEvent.TPS * 10)
         
         //accumulate velocity
         this.velocity = this.velocity.plusVec(this.acceleration).roundX();

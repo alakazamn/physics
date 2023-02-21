@@ -32,13 +32,15 @@ export default class Physics {
   }
 
   onTick = (e : TickEvent) => {
-    this.logic(e.getChunk(), e.getPlayer(), e.getTicks());
+    for(var i = 0; i<e.getTicks(); i++) {
+      this.logic(e.getChunk(), e.getPlayer());
+    }
   }
 
-  logic = (c : Chunk, p : Player, ticks: number) => {    
-    p.tick(ticks); 
+  logic = (c : Chunk, p : Player) => {    
+    p.tick(); 
     c.getObjects().forEach((e)=> {
-      e.tick(ticks);
+      e.tick();
     })
   }
 
@@ -52,7 +54,7 @@ export default class Physics {
        //unrealistic, but otherwise the game is unplayable...
        //the player needs to be able to jump at least 1m, which
        //in real life is impossible...
-      e.getPlayer().applyImpulse(new Force(Math.PI/2, 1500), 0.1);
+      e.getPlayer().applyImpulse(new Force(Math.PI/2, 1500), 0.8);
       e.getPlayer().setJumping(true);
       e.getPlayer().subJumps();
     } else {
@@ -111,7 +113,7 @@ export default class Physics {
         xDT = 0;
         //If the player rams into a wall, mark them dead
         e.getBody().clearForces();
-        e.getBody().applyImpulse(new Force(Math.PI/2, 1500),0.05); //death animation
+        e.getBody().applyImpulse(new Force(Math.PI/2, 1500),0.5); //death animation
         Dispatch.fire(new PlayerDeathEvent(e.getBody() as Player));
         //e.getBody().stopH();
         e.setResult(EventResult.DENY);
@@ -158,7 +160,7 @@ export default class Physics {
 
     if(e.getBody() instanceof Player && y > Chunk.HEIGHT  * Tile.HEIGHT) { //if the player falls into the void, mark them dead.
       e.getBody().clearForces();
-      e.getBody().applyImpulse(new Force(Math.PI/2, 1500),0.05); //death animation
+      e.getBody().applyImpulse(new Force(Math.PI/2, 1500),0.5); //death animation
       Dispatch.fire(new PlayerDeathEvent(e.getBody() as Player)); 
       (e.getBody() as Player).setJumping(true); //death animation
     }
