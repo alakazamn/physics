@@ -125,6 +125,7 @@ export default class Core {
     if(!Input.getInstance().isDown(InputType.UP) && this.wasJumped) {
       this.wasJumped = false
     }
+    
     if(p.getMoving() && !Input.getInstance().isDown(InputType.LEFT) && !Input.getInstance().isDown(InputType.RIGHT)) {
       Dispatch.fire(new PlayerStopEvent(p));
     }
@@ -150,6 +151,9 @@ export default class Core {
     } 
     else if(e.getInputType()===InputType.AUDIO) {
       AudioManager.getInstance().toggleMusic();
+    }
+    else if(e.getInputType() == InputType.RESET) {
+      location.reload();
     }
   }
 

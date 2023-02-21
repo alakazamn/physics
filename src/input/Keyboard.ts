@@ -41,7 +41,8 @@ export default class Keyboard {
       76: InputType.AUDIO,
       87: InputType.UP,
       83: InputType.DOWN,
-      114: InputType.DEBUG
+      114: InputType.DEBUG,
+      82: InputType.RESET
     };
     return keyMap[key]
   }

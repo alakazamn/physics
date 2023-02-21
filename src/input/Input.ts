@@ -60,5 +60,6 @@ export enum InputType {
   LEFT,
   RIGHT,
   AUDIO,
-  DEBUG
+  DEBUG,
+  RESET
 }
