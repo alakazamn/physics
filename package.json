@@ -9,7 +9,7 @@
   "scripts": {
     "build": "webpack",
     "start": "serve ./dist",
-    "test" : "npm run build && serve ./dist"
+    "test" : "npm run build && serve -p 3000 ./dist"
   },
   "author": "",
   "license": "ISC",

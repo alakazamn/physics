@@ -17,7 +17,7 @@ import { TickEvent } from "../event/TickEvent";
 
 export class Force extends Vector {
     private applied = true;
-    private ticks = -1; //duration
+    private ticks = -100; //duration
     private isNormal = false;
 
     /*
@@ -34,9 +34,9 @@ export class Force extends Vector {
     public getDuration() : number {
         return this.ticks
     }
-    public tick() {
+    public tick(ticks: number) {
         if(this.ticks > 0)
-            this.ticks--;
+            this.ticks -= ticks;
     }
     public setNormal(normal : boolean) {
         this.isNormal = normal;
